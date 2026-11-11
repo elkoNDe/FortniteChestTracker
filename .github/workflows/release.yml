@@ -1,0 +1,98 @@
+name: Publish Windows EXE release
+
+# The first commit that adds this workflow publishes v0.3.2 after testing.
+# Future releases are explicitly started via "Run workflow" after bumping
+# <Version> in the project file; normal code pushes never publish a release.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fortnite-chesttracker-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'elkoNDe/FortniteChestTracker' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Read version
+        id: version
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content -Raw 'src/FortniteChestTracker/FortniteChestTracker.csproj'
+          $version = [string]$project.Project.PropertyGroup.Version
+          if ($version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Invalid project version: $version"
+          }
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+
+      - name: Run application self-tests
+        shell: pwsh
+        run: ./scripts/test.ps1
+
+      - name: Test time ranges and dashboard filters
+        shell: pwsh
+        run: node --test scripts/dashboard.test.cjs
+
+      - name: Build standalone Windows EXE
+        shell: pwsh
+        run: ./scripts/build.ps1
+
+      - name: Smoke test isolated EXE, browser, SQLite and watcher
+        shell: pwsh
+        run: ./scripts/smoke.ps1
+
+      - name: Generate SHA256 checksum
+        shell: pwsh
+        run: |
+          $exe = 'dist/win-x64/FortniteChestTracker.exe'
+          if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) {
+            throw 'Standalone executable not found.'
+          }
+          $hash = (Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  FortniteChestTracker.exe" | Set-Content -LiteralPath 'dist/win-x64/SHA256SUMS.txt' -Encoding utf8
+
+      - name: Publish EXE directly to GitHub Releases
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ steps.version.outputs.tag }}'
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            throw "Release $tag already exists. Bump the project version before publishing another."
+          }
+          @'
+          Fortnite ChestTracker para Windows 10/11 x64.
+
+          **Descarga FortniteChestTracker.exe directamente**, sin ZIP y sin instalar .NET.
+          El archivo SHA256SUMS.txt permite verificar su integridad.
+
+          - Contador local de cofres a partir de repeticiones Fortnite.
+          - Estadísticas personales, equipo, historial y panel HTML.
+          - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
+          - Los datos se conservan en tu propio ordenador.
+
+          Activa la grabación de repeticiones desde Fortnite y ejecuta el EXE.
+          El ejecutable no está firmado digitalmente: comprueba cualquier alerta de Windows
+          y no desactives las medidas de seguridad para ejecutarlo.
+
+          Nota: el parser y la atribución de compañeros aún requieren validación
+          con más repeticiones reales de diferentes versiones de Fortnite.
+          Proyecto independiente, no afiliado a Epic Games.
+          '@ | Set-Content -LiteralPath RELEASE_NOTES.md -Encoding utf8
+          gh release create $tag 'dist/win-x64/FortniteChestTracker.exe' 'dist/win-x64/SHA256SUMS.txt' --repo $env:GITHUB_REPOSITORY --title "Fortnite ChestTracker $tag" --notes-file RELEASE_NOTES.md --target $env:GITHUB_SHA --latest
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub Release publication failed.' }

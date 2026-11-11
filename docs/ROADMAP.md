@@ -1,24 +1,31 @@
 # Hoja de ruta
 
-## v0.1 - Primera implementacion (actual)
-- [x] Lector de repeticiones desde código fuente auditable
-- [x] Clasificacion de cofres y atribucion al jugador de la repeticion
-- [x] Deteccion de archivos terminados y reintentos
-- [x] Persistencia SQLite sin duplicar sesiones
-- [x] Panel HTML y exportacion CSV
-- [x] Tests unitarios internos y accion de CI (aun no ejecutada)
-- [ ] Build comprobado en Windows
-- [ ] Precision comprobada con replays reales de la version actual
+## Estado actual — v0.3.2
 
-## v0.2 - Robustez
-- [ ] Aumentar cobertura de eventos de replays reales y analizar errores de `errors.log`
-- [ ] Tests de regresion anonimizados con al menos dos versiones de Fortnite
-- [ ] Ajustar deduplicacion de cofres dinamicos y cofres que reaparecen
-- [ ] Historial separado por EpicId/perfil
-- [ ] Opciones de reanalizar partidas si cambia el parser
+- [x] Lectura de repeticiones de Fortnite sin acceder al proceso del juego
+- [x] Clasificación de cofres y atribución al propietario de la repetición
+- [x] Registro de jugadores del mismo equipo cuando el replay permite identificarlos
+- [x] Detección de repeticiones terminadas y monitorización cada 6 segundos
+- [x] Estadísticas de Cero construcción BR (solo Solo, Duo, Trio y Squad)
+- [x] SQLite, deduplicación, migraciones, historial y exportación CSV
+- [x] Panel HTML con gráficas, filtros, posición final y paginación
+- [x] Compilación y pruebas automáticas en Windows con GitHub Actions
+- [x] Distribución autónoma en EXE y variante portable
+- [x] Publicación de versiones mediante GitHub Releases
 
-## v0.3 - Experiencia de usuario
-- [ ] Aplicacion Windows con bandeja del sistema y ajustes visuales
-- [ ] Overlay seguro (ventana propia, sin inyeccion en el juego)
-- [ ] Gráficas de tendencias y filtros por periodo
-- [ ] Instalador y actualización opcional con firma/verificación
+## Prioridades para mejorar la fiabilidad
+
+- [ ] Validar los recuentos con repeticiones reales de varias versiones de Fortnite
+- [ ] Preparar fixtures de regresión anonimizadas para el parser y la atribución de compañeros
+- [ ] Revisar casos de cofres dinámicos, reaparecidos y eventos que no pueden atribuirse
+- [ ] Comprobar la compatibilidad del lector tras actualizaciones del juego
+- [ ] Reforzar la distribución: firma digital de Windows y verificaciones de integridad
+
+## Mejoras futuras
+
+- [ ] Estadísticas de victorias, Top 10 y porcentajes basadas en la posición final
+- [ ] Separación opcional de perfiles cuando varios jugadores usen el mismo ordenador
+- [ ] Opción de reanalizar partidas cuando cambie el lector
+- [ ] Interfaz de bandeja del sistema, ajustes visuales y cierre cómodo del monitor
+- [ ] Instalador o actualizaciones opcionales
+- [ ] Evaluar un overlay propio seguro, sin inyección en el juego

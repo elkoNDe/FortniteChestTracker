@@ -35,11 +35,10 @@ Los demás modos quedan fuera de las estadísticas, las gráficas, el historial 
 ## Descargar y usar
 
 1. Activa en Fortnite **Ajustes → Juego → Repeticiones → Grabar repeticiones**.
-2. En [GitHub Actions → Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml), abre la última ejecución correcta.
-3. Descarga uno de los archivos de **Artifacts**:
-   - **`FortniteChestTracker-win-x64`:** ejecutable único para Windows x64.
-   - **`FortniteChestTracker-win-x64-portable`:** EXE y dependencias por separado, con `SHA256SUMS.txt`.
-4. Descomprime el ZIP y ejecuta `FortniteChestTracker.exe`. Se abrirá el panel en el navegador. Mantén la aplicación abierta mientras juegas para importar nuevas partidas.
+2. Descarga **[FortniteChestTracker.exe](https://github.com/elkoNDe/FortniteChestTracker/releases/latest/download/FortniteChestTracker.exe)** desde la [última release](https://github.com/elkoNDe/FortniteChestTracker/releases/latest): un único archivo, sin ZIP y sin instalar .NET.
+3. Ejecuta `FortniteChestTracker.exe`. Se abrirá el panel en el navegador. Mantén la aplicación abierta mientras juegas para importar nuevas partidas.
+
+Si prefieres inspeccionar las dependencias por separado, en [GitHub Actions](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml) se sigue generando la distribución `FortniteChestTracker-win-x64-portable` con hashes SHA-256.
 
 Por defecto, lee los replays de `%LOCALAPPDATA%\FortniteGame\Saved\Demos` y guarda los datos en `%LOCALAPPDATA%\FortniteChestTracker`. **Cambiar el EXE no borra tus estadísticas.**
 
