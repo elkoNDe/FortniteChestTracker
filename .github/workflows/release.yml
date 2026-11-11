@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.4: publish the verified party-period statistics and unified date layout.
+# v0.3.5: publish the verified interactive chart legend (Tú / Party).
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
