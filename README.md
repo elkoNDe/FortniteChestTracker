@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/version-0.3.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**Contador local de cofres de Fortnite (CERO CONSTRUCCION) para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
+**Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
