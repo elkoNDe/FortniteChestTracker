@@ -271,7 +271,7 @@ public static class SelfTest
                     .Single(m => m.SessionId == "correct-future").Date == winterUtc,
                 "las nuevas partidas correctamente fechadas no se modifican");
             Check(extendedHtml.Contains("<th>Fecha inicio</th>") &&
-                File.ReadLines(Path.Combine(dir, "matches.csv")).First().StartsWith("Fecha inicio;Jugador;Posicion;"),
+                File.ReadLines(Path.Combine(dir, "matches.csv")).First().StartsWith("Fecha inicio;Fecha fin;Duracion;Jugador;Posicion;"),
                 "columnas Fecha inicio y Posicion en HTML y CSV");
 
             // The in-game TeamIndex, not the social lobby, identifies squads.
