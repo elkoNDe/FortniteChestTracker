@@ -21,7 +21,7 @@ No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de E
 
 ### Modos admitidos
 
-Se cuentan únicamente estas playlists de **Battle Royale sin construcción**:
+Se cuentan únicamente estas playlists de **Battle Royale cero construcción** (el unico modo bueno):
 
 - `Playlist_NoBuildBR_Solo`
 - `Playlist_NoBuildBR_Duo`
