@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  periodStart, shiftPeriod, inRange, bucketsFor, lastNDaysStart, paginate, playersForMatch
+  periodStart, shiftPeriod, inRange, bucketsFor, lastNDaysStart, paginate, playersForMatch, visibleChartSeries
 } = require('../src/FortniteChestTracker/Assets/dashboard.js');
 
 const entry = (year, month, day, chests) => ({
@@ -99,4 +99,17 @@ test('totales por periodo de party: personales sin duplicar y sin inventar compa
   const month = bucketsFor(rows, 'month', 1, new Date(2026, 10, 12));
   assert.equal(month[0].chests, 20);
   assert.equal(month[0].party, 30);
+});
+
+test('leyenda de series: ambas, solo tú, solo party y ninguna', () => {
+  const match = { chests: 6, party: 13 };
+  assert.deepEqual(visibleChartSeries(match, true, true).map(x => [x.id, x.value]),
+    [['owner', 6], ['party', 13]]);
+  assert.deepEqual(visibleChartSeries(match, true, false).map(x => [x.id, x.value]),
+    [['owner', 6]]);
+  assert.deepEqual(visibleChartSeries(match, false, true).map(x => [x.id, x.value]),
+    [['party', 13]]);
+  assert.deepEqual(visibleChartSeries(match, false, false), []);
+  assert.equal(Math.max(1, ...visibleChartSeries(match, false, true).map(x => x.value)), 13);
+  assert.equal(Math.max(1, ...visibleChartSeries(match, true, false).map(x => x.value)), 6);
 });

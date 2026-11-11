@@ -130,7 +130,9 @@ public static class SelfTest
                 extendedHtml.Contains("id=\"week-party\"") &&
                 extendedHtml.Contains("id=\"month-party\"") &&
                 extendedHtml.Contains("id=\"period-party\"") &&
-                extendedHtml.Contains("id=\"history-party\""),
+                extendedHtml.Contains("id=\"history-party\"") &&
+                extendedHtml.Contains("data-series=\"owner\" aria-pressed=\"true\"") &&
+                extendedHtml.Contains("data-series=\"party\" aria-pressed=\"true\""),
                 "cabecera con total de escuadra y columna Posicion");
             Check(json.RootElement[0].GetProperty("team").GetArrayLength() == 3 &&
                 json.RootElement[0].GetProperty("team")[2].GetProperty("chests").ValueKind ==

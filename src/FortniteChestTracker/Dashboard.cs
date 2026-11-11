@@ -153,8 +153,13 @@ public static class Dashboard
             .chart-rail { width: 100%; height: 145px; display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
             .chart-fill { display: block; width: 44%; max-width: 26px; min-height: 0; border-radius: 6px 6px 0 0; background: linear-gradient(0deg, #a87924, #f6d889); }
             .chart-fill-party { background: linear-gradient(0deg, #3463a5, #b0d8ff); }
-            .chart-legend { color: #96a6c4; font-size: 12px; }
-            .chart-legend .owner { color: #f6d889; } .chart-legend .party { color: #b0d8ff; }
+            .chart-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+            .legend-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border: 1px solid #415573; border-radius: 10px; background: #172744; color: #c8d6ed; cursor: pointer; font: inherit; font-size: 12px; }
+            .legend-toggle.owner span { color: #f6d889; }
+            .legend-toggle.party span { color: #b0d8ff; }
+            .legend-toggle[aria-pressed="false"] { opacity: .48; text-decoration: line-through; }
+            .legend-toggle:hover { background: #263e65; }
+            .chart-rail .chart-fill:only-child { width: 70%; max-width: 42px; }
             .chart-label { font-size: 11px; white-space: nowrap; padding-bottom: 6px; }
             .tablewrap { overflow-x: auto; margin-top: 17px; }
             table { width: 100%; border-collapse: collapse; white-space: nowrap; text-align: left; font-size: 13px; }
@@ -244,7 +249,10 @@ public static class Dashboard
                   <button type="button" data-unit="month" aria-pressed="false">Mensual</button>
                 </div>
               </div>
-              <div class="period-summary"><strong id="period-total">—</strong><strong id="period-party">—</strong><span id="period-games">—</span><span class="chart-legend"><span class="owner">■</span> Tú · <span class="party">■</span> Party (incluye tus cofres)</span></div>
+              <div class="period-summary"><strong id="period-total">—</strong><strong id="period-party">—</strong><span id="period-games">—</span><div class="chart-legend" role="group" aria-label="Mostrar u ocultar barras">
+                <button class="legend-toggle owner" type="button" data-series="owner" aria-pressed="true"><span aria-hidden="true">■</span> Tú</button>
+                <button class="legend-toggle party" type="button" data-series="party" aria-pressed="true"><span aria-hidden="true">■</span> Party (incluye tus cofres)</button>
+              </div></div>
               <div class="chart-scroll"><div class="chart" id="period-chart" aria-label="Gráfica interactiva de cofres"></div></div>
             </section>
             <section class="panel" id="history-panel">

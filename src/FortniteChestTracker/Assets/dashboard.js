@@ -50,6 +50,13 @@
     return groups;
   }
 
+  function visibleChartSeries(group, showOwner, showParty) {
+    const series = [];
+    if (showOwner) series.push({ id: "owner", label: "Tú", value: group.chests });
+    if (showParty) series.push({ id: "party", label: "Party", value: group.party });
+    return series;
+  }
+
   function paginate(records, requestedPage, size) {
     const pages = Math.max(1, Math.ceil(records.length / size));
     const page = Math.min(pages, Math.max(1, requestedPage));
@@ -75,7 +82,7 @@
 
   // Node can import and test the period calculations without a browser.
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { periodStart, shiftPeriod, inRange, bucketsFor, lastNDaysStart, paginate, playersForMatch };
+    module.exports = { periodStart, shiftPeriod, inRange, bucketsFor, lastNDaysStart, paginate, playersForMatch, visibleChartSeries };
     return;
   }
 
@@ -85,11 +92,13 @@
     when: new Date(item.date)
   }));
   const KEY = "fortnite-chesttracker-dashboard-v2";
-  const initial = { unit: "day", filter: "all", page: 1, size: 10, range: null };
+  const initial = { unit: "day", filter: "all", page: 1, size: 10, range: null, showOwner: true, showParty: true };
   let state = { ...initial };
   try {
     const saved = JSON.parse(sessionStorage.getItem(KEY) || "{}");
     if (saved.unit === "day" || saved.unit === "month") state.unit = saved.unit;
+    if (typeof saved.showOwner === "boolean") state.showOwner = saved.showOwner;
+    if (typeof saved.showParty === "boolean") state.showParty = saved.showParty;
     if (["all", "today", "week", "month", "7days", "30days", "bucket"].includes(saved.filter)) state.filter = saved.filter;
     if (Number.isSafeInteger(saved.size) && saved.size >= 10 &&
         saved.size <= 100 && saved.size % 10 === 0) state.size = saved.size;
@@ -101,6 +110,7 @@
 
   const $ = id => document.getElementById(id);
   const modeButtons = Array.from(document.querySelectorAll("[data-unit]"));
+  const legendButtons = Array.from(document.querySelectorAll("[data-series]"));
   const historyBody = $("history-body");
 
   function save() {
@@ -139,6 +149,11 @@
   }
 
   function renderChart() {
+    legendButtons.forEach(button => {
+      const active = button.dataset.series === "owner" ? state.showOwner : state.showParty;
+      button.setAttribute("aria-pressed", String(active));
+      button.classList.toggle("inactive", !active);
+    });
     modeButtons.forEach(button => {
       const active = button.dataset.unit === state.unit;
       button.classList.toggle("active", active);
@@ -158,7 +173,8 @@
     $("period-party").textContent = "Party: " + fmtNumber.format(partyTotal) + " cofres";
     $("period-games").textContent = games + (games === 1 ? " partida" : " partidas");
 
-    const highest = Math.max(1, ...groups.map(item => item.party));
+    const highest = Math.max(1, ...groups.flatMap(item =>
+      visibleChartSeries(item, state.showOwner, state.showParty).map(series => series.value)));
     for (const group of groups) {
       const bar = document.createElement("button");
       bar.type = "button";
@@ -168,18 +184,20 @@
       bar.title = rangeLabel(group.start, group.end) + ": tú " + group.chests +
       " cofres, party " + group.party + " observados, en " + group.games + " partidas";
       bar.setAttribute("aria-label", bar.title + ". Filtrar historial");
+      const series = visibleChartSeries(group, state.showOwner, state.showParty);
       const count = document.createElement("span");
       count.className = "chart-value";
-      count.textContent = fmtNumber.format(group.chests) + " / " + fmtNumber.format(group.party);
+      count.textContent = series.length
+        ? series.map(item => fmtNumber.format(item.value)).join(" / ") : "—";
       const rail = document.createElement("span");
       rail.className = "chart-rail";
-      const fill = document.createElement("span");
-      fill.className = "chart-fill";
-      fill.style.height = group.chests > 0 ? Math.max(2, Math.round(100 * group.chests / highest)) + "%" : "0";
-      const partyFill = document.createElement("span");
-      partyFill.className = "chart-fill chart-fill-party";
-      partyFill.style.height = group.party > 0 ? Math.max(2, Math.round(100 * group.party / highest)) + "%" : "0";
-      rail.append(fill, partyFill);
+      for (const item of series) {
+        const fill = document.createElement("span");
+        fill.className = item.id === "party" ? "chart-fill chart-fill-party" : "chart-fill";
+        fill.style.height = item.value > 0
+          ? Math.max(2, Math.round(100 * item.value / highest)) + "%" : "0";
+        rail.append(fill);
+      }
       const label = document.createElement("span");
       label.className = "chart-label";
       label.textContent = bucketLabel(group, state.unit);
@@ -294,6 +312,14 @@
     $("page-next").disabled = state.page === result.pages;
   }
 
+  for (const button of legendButtons) {
+    button.addEventListener("click", () => {
+      if (button.dataset.series === "owner") state.showOwner = !state.showOwner;
+      else state.showParty = !state.showParty;
+      renderChart();
+      save();
+    });
+  }
   for (const button of modeButtons) {
     button.addEventListener("click", () => {
       state.unit = button.dataset.unit;

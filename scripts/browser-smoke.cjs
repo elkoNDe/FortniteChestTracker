@@ -100,6 +100,12 @@ try {
   assert.ok((html.match(/class="chart-bar"/g) || []).length >= 12, "No se han generado las barras semanales.");
   assert.ok((html.match(/class="chart-fill chart-fill-party"/g) || []).length >= 12,
     "La gráfica no muestra las barras de la party.");
+  assert.match(html, /data-series="owner" aria-pressed="true"/,
+    "Falta el control accesible para alternar tus cofres.");
+  assert.match(html, /data-series="party" aria-pressed="true"/,
+    "Falta el control accesible para alternar los cofres de party.");
+  assert.match(html, /Party \(incluye tus cofres\)/,
+    "La leyenda de la party no está identificada.");
 
   assert.match(html, /data-unit="day"[^>]*aria-pressed="true"/, "El gráfico no inicia en Diario.");
   assert.match(html, /data-unit="month"/, "Falta la opción Mensual.");
