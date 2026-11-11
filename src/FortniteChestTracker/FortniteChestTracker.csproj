@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>FortniteChestTracker</AssemblyName>
+    <RootNamespace>FortniteChestTracker</RootNamespace>
+    <Version>0.3.2</Version>
+    <ApplicationIcon>Assets/AppIcon.ico</ApplicationIcon>
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- A standalone EXE must also contain SQLite's native e_sqlite3.dll. -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../third_party/ChestCounter/lib/FortniteReplayReader/FortniteReplayReader.csproj" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+    <!-- Explicitly use patched SQLite native binaries; transitive 2.1.11 is vulnerable. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/dashboard.js" LogicalName="FortniteChestTracker.dashboard.js" />
+    <EmbeddedResource Include="Assets/AppIcon.ico" LogicalName="FortniteChestTracker.app-icon.ico" />
+  </ItemGroup>
+</Project>

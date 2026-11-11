@@ -1,0 +1,45 @@
+name: Build and test Windows
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Tests
+        shell: pwsh
+        run: ./scripts/test.ps1
+      - name: Tests de filtros y agrupaciones temporales
+        shell: pwsh
+        run: node --test scripts/dashboard.test.cjs
+      - name: Publicar EXE autonomo
+        shell: pwsh
+        run: ./scripts/build.ps1
+      - name: Smoke test EXE aislado (SQLite y arranque real)
+        shell: pwsh
+        run: ./scripts/smoke.ps1
+      - name: Publicar distribución estándar (dependencias separadas)
+        shell: pwsh
+        run: ./scripts/build-portable.ps1
+      - name: Comprobar distribución estándar y hashes SHA256
+        shell: pwsh
+        run: ./scripts/smoke-portable.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FortniteChestTracker-win-x64
+          path: dist/win-x64/FortniteChestTracker.exe
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FortniteChestTracker-win-x64-portable
+          path: dist/win-x64-portable/
+          if-no-files-found: error
