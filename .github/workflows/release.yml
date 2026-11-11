@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# The first commit that adds this workflow publishes v0.3.2 after testing.
+# v0.3.3: after Windows tests, publish a standalone EXE and SHA256 file.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
