@@ -76,3 +76,11 @@ test('desglose por jugador, sin duplicar las partidas ni inventar datos', () => 
   assert.equal(match.chests, 8);
   assert.equal(playersForMatch({ player: 'Yo', chests: 8, destroyed: 1, ammo: 2 }).length, 1);
 });
+
+test('paginación con saltos de 10: 10, 20, 30, ... 100', () => {
+  const matches = Array.from({length: 135}, (_, i) => i);
+  for (let size = 10; size <= 100; size += 10) {
+    assert.equal(paginate(matches, 1, size).visible.length, size);
+    assert.equal(paginate(matches, 99, size).page, Math.ceil(135 / size));
+  }
+});

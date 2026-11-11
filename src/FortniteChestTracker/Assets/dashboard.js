@@ -83,13 +83,14 @@
     when: new Date(item.date)
   }));
   const KEY = "fortnite-chesttracker-dashboard-v2";
-  const initial = { unit: "day", filter: "all", page: 1, size: 25, range: null };
+  const initial = { unit: "day", filter: "all", page: 1, size: 10, range: null };
   let state = { ...initial };
   try {
     const saved = JSON.parse(sessionStorage.getItem(KEY) || "{}");
     if (saved.unit === "day" || saved.unit === "month") state.unit = saved.unit;
     if (["all", "today", "week", "month", "7days", "30days", "bucket"].includes(saved.filter)) state.filter = saved.filter;
-    if ([25, 50, 100].includes(saved.size)) state.size = saved.size;
+    if (Number.isSafeInteger(saved.size) && saved.size >= 10 &&
+        saved.size <= 100 && saved.size % 10 === 0) state.size = saved.size;
     if (Number.isSafeInteger(saved.page) && saved.page > 0) state.page = saved.page;
     if (saved.range && Number.isFinite(Date.parse(saved.range.start)) && Number.isFinite(Date.parse(saved.range.end)))
       state.range = saved.range;
@@ -238,6 +239,16 @@
             day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
           });
           row.append(date);
+          const end = document.createElement("td");
+          end.rowSpan = players.length;
+          end.textContent = match.end ? formatDate(new Date(match.end), {
+            day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+          }) : "—";
+          row.append(end);
+          const duration = document.createElement("td");
+          duration.rowSpan = players.length;
+          duration.textContent = match.duration || "—";
+          row.append(duration);
         }
         makeCell(row, player.name || "Jugador desconocido", "player-cell");
         if (index === 0) {

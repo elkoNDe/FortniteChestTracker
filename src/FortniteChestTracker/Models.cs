@@ -18,6 +18,8 @@ public sealed record MatchResult(
     // of personal totals, records, averages and charts.
     public IReadOnlyList<TeamMemberResult> TeamMembers { get; init; } = Array.Empty<TeamMemberResult>();
     public int? Placement { get; init; } = null;
+    // Duration recorded in the local replay header, not time spent alive.
+    public double? DurationSeconds { get; init; }
 }
 
 public sealed record TeamMemberResult(

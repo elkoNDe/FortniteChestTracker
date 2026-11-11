@@ -38,9 +38,11 @@ public static class Dashboard
             if (s.Length > 0 && "=+-@\t\r".Contains(s[0])) s = "'" + s;
             return "\"" + s.Replace("\"", "\"\"") + "\"";
         }
-        var sb = new StringBuilder("Fecha inicio;Jugador;Posicion;Cofres;Destruidos;Municion;Otros;IdPartida\r\n");
+        var sb = new StringBuilder("Fecha inicio;Fecha fin;Duracion;Jugador;Posicion;Cofres;Destruidos;Municion;Otros;IdPartida\r\n");
         foreach (var m in snapshot.Matches)
             sb.AppendLine(string.Join(';', Cell(m.Date.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)),
+                Cell(m.EndedUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) ?? ""),
+                Cell(m.DurationSeconds is > 0 ? m.DurationText : ""),
                 Cell(m.Player), m.Placement?.ToString(CultureInfo.InvariantCulture) ?? "", m.Chests.ToString(CultureInfo.InvariantCulture), m.Destroyed.ToString(CultureInfo.InvariantCulture), m.AmmoBoxes.ToString(CultureInfo.InvariantCulture), m.OtherContainers.ToString(CultureInfo.InvariantCulture), Cell(m.SessionId)));
         File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
     }
@@ -63,6 +65,8 @@ public static class Dashboard
             data.Matches.Select(m => new
             {
                 date = m.Date.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                end = m.EndedUtc?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+                duration = m.DurationText,
                 player = m.Player,
                 placement = m.Placement,
                 chests = m.Chests,
@@ -252,13 +256,16 @@ public static class Dashboard
                   <button type="button" class="button" id="reset-filter">Limpiar</button>
                   <label for="page-size" class="secondary">Filas</label>
                   <select class="control" id="page-size">
-                    <option value="25">25</option><option value="50">50</option><option value="100">100</option>
+                    <option value="10">10</option><option value="20">20</option><option value="30">30</option>
+                    <option value="40">40</option><option value="50">50</option><option value="60">60</option>
+                    <option value="70">70</option><option value="80">80</option><option value="90">90</option>
+                    <option value="100">100</option>
                   </select>
                 </div>
               </div>
               <div class="period-summary"><strong id="history-total">—</strong><span id="history-count"></span></div>
               <div class="tablewrap" id="history-tablewrap">
-                <table><thead><tr><th>Fecha inicio</th><th>Jugador / escuadra</th><th>Posición</th><th>Cofres</th><th>Destruidos</th><th>Munición</th></tr></thead>
+                <table><thead><tr><th>Fecha inicio</th><th>Fecha fin</th><th>Duración</th><th>Jugador / escuadra</th><th>Posición</th><th>Cofres</th><th>Destruidos</th><th>Munición</th></tr></thead>
                 <tbody id="history-body"></tbody></table>
               </div>
               <div class="empty" id="history-empty" hidden>Sin partidas en este periodo. Prueba a cambiar el filtro.</div>

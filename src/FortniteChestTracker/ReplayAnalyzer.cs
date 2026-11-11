@@ -194,6 +194,6 @@ public sealed class ReplayAnalyzer : FortniteReplayReader.ReplayReader
         return new MatchResult(sessionId, MatchTimes.FromReplayUtc(started), playerName, player?.EpicId,
             playlist, chests.Length, chests.Count(e => e.Destroyed), events.Count(e => e.Kind == "Municion"),
             events.Count(e => !ChestTypes.IsChest(e.Kind) && e.Kind != "Municion"), chests)
-        { TeamMembers = breakdown, Placement = placement };
+        { TeamMembers = breakdown, Placement = placement, DurationSeconds = ReplayProbe.ReadDurationSeconds(path) };
     }
 }

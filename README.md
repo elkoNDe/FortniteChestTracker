@@ -1,20 +1,20 @@
 # Fortnite ChestTracker
 
 [![Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml/badge.svg)](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml)
-![Version](https://img.shields.io/badge/version-0.3.2-blue)
+![Version](https://img.shields.io/badge/version-0.3.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
-> **Estado: v0.3.2.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
+> **Estado: v0.3.3.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
 
 ## Qué hace
 
 - **Tus cofres:** aperturas, destruidos, récord, media, estadísticas diarias y mensuales.
 - **Cofres de party:** suma tus cofres una sola vez y añade los cofres *observados y atribuibles* al resto de tu equipo.
-- **Historial:** lista completa y paginada, filtros por fechas y posición final cuando el replay la proporciona.
+- **Historial:** fecha de inicio, fecha de fin estimada desde el encabezado del replay, duración grabada, filtros por fechas y posición final cuando está disponible. Paginación de 10 en 10 (10–100 partidas por página).
 - **Detección automática:** revisa las repeticiones cada 6 segundos y procesa las partidas al terminar su grabación.
 - **Panel HTML local:** `dashboard.html` se actualiza cada 20 segundos y permite examinar las gráficas por periodos.
 - **Datos propios:** SQLite (`tracker.db`) y exportación a `matches.csv`. Las partidas se deduplican por sesión.
@@ -29,6 +29,8 @@ Se cuentan únicamente estas playlists de **Battle Royale cero construcción** (
 - `Playlist_NoBuildBR_Squad`
 
 Los demás modos quedan fuera de las estadísticas, las gráficas, el historial y el CSV. Los datos antiguos de otras playlists se conservan en SQLite, pero no se muestran.
+
+**Duración de la partida:** representa la duración **grabada en el replay**, que puede incluir tiempo en modo espectador o acabar antes de que termine la partida para el resto del equipo. La fecha fin se calcula a partir del inicio más esa duración. La aplicación intenta recuperar automáticamente la duración de partidas antiguas mientras sus archivos `.replay` sigan disponibles. En otros casos muestra «—» sin inventar una hora.
 
 **Nota sobre la party:** el programa identifica el equipo de la partida a partir de `TeamIndex`; no puede comprobar si los jugadores pertenecían a tu grupo de amigos del lobby. Un «—» significa que faltan datos para atribuir aperturas, **no cero cofres**. Por ello, el total del equipo es un mínimo observado.
 

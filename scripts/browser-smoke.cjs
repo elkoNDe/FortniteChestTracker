@@ -49,17 +49,21 @@ try {
   assert.match(html, /id="today-chests">[0-9]/, "El script no actualiza los cofres de hoy.");
   assert.match(html, /id="week-chests">[0-9]/, "El script no actualiza los cofres semanales.");
   assert.match(html, /id="month-chests">[0-9]/, "El script no actualiza los cofres mensuales.");
-  assert.match(html, /id="history-page">Página 1 de 6</, "La paginación no se ha inicializado.");
+  assert.match(html, /id="history-page">Página 1 de 14</, "La paginación no se ha inicializado.");
 
   const history = html.match(/<tbody id="history-body">([\s\S]*?)<\/tbody>/);
   assert.ok(history, "No existe el historial en el DOM.");
-  // Pagination is per match, not per player: 25 matches plus two squad
-  // teammates under the first match = 27 table rows.
-  assert.equal((history[1].match(/<tr[^>]*>/g) || []).length, 27,
-    "No aparecen las 25 partidas con los jugadores de la primera escuadra.");
+  // Pagination is per match, not per player: 10 matches plus two squad
+  // teammates under the first match = 12 table rows.
+  assert.equal((history[1].match(/<tr[^>]*>/g) || []).length, 12,
+    "No aparecen las 10 partidas con los jugadores de la primera escuadra.");
   assert.match(history[1], /rowspan="3"/,
     "La fecha y la posición de una escuadra deben aparecer una sola vez.");
   assert.match(html, /<th>Posición<\/th>/, "Falta la columna Posición.");
+  assert.match(html, /<th>Fecha fin<\/th>/, "Falta la fecha fin.");
+  assert.match(html, /<th>Duración<\/th>/, "Falta la duración.");
+  assert.match(history[1], /18:12/, "Falta la duración de la primera partida.");
+  assert.match(html, /<option value="90">90<\/option>/, "Paginación no configurable de 10 en 10.");
   assert.doesNotMatch(html, /<th>Modo<\/th>/, "Modo debe desaparecer.");
   assert.match(history[1], /title="Victoria">#1<\/td>/,
     "La primera partida debe mostrar una posición de victoria.");
@@ -88,7 +92,7 @@ try {
   assert.match(html, /data-unit="day"[^>]*aria-pressed="true"/, "El gráfico no inicia en Diario.");
   assert.match(html, /data-unit="month"/, "Falta la opción Mensual.");
   assert.doesNotMatch(html, /data-unit="week"/, "Semanal no debe aparecer en el selector del gráfico.");
-  console.log("OK: gráfico Diario/Mensual, contadores y 25 partidas paginadas en Edge.");
+  console.log("OK: gráfico Diario/Mensual, contadores y 10 partidas paginadas en Edge.");
 } finally {
   fs.rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }

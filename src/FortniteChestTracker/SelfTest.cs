@@ -14,7 +14,7 @@ public static class SelfTest
             var store = new TrackerStore(dir);
             var sample = new MatchResult("session-test", DateTime.UtcNow, "TestPlayer", null, "Playlist_NoBuildBR_Squad", 2, 1, 1, 0,
                 new[] { new ChestEvent(30, "Normal", "B_TieredChest_Athena", false), new ChestEvent(60, "Raro", "B_RareChest", true) })
-            { Placement = 3 };
+            { Placement = 3, DurationSeconds = 1092 };
             Check(store.Save(sample, "first.replay|100|1"), "primera insercion");
             Check(!store.Save(sample, "renamed.replay|100|1"), "partida renombrada deduplicada");
             Check(store.HasProcessed("renamed.replay|100|1"), "huella registrada");
@@ -38,8 +38,14 @@ public static class SelfTest
             Check(snapshot.Matches.Count == 1 && snapshot.Chests == 2 && snapshot.Destroyed == 1 &&
                 snapshot.SquadChests == 2 && snapshot.Matches[0].Placement == 3,
                 "estadisticas solo Zero Build y posicion final guardada");
+            Check(snapshot.Matches[0].DurationText == "18:12" &&
+                snapshot.Matches[0].EndedUtc == sample.StartedUtc.AddSeconds(1092),
+                "duración del replay persistida y fecha fin derivada sin alterar la fecha de inicio");
             var html = Dashboard.Write(snapshot, dir);
             Check(File.Exists(html) && File.Exists(Path.Combine(dir, "matches.csv")), "informes");
+            Check(File.ReadAllText(Path.Combine(dir, "matches.csv")).StartsWith(
+                "Fecha inicio;Fecha fin;Duracion;Jugador;Posicion;", StringComparison.Ordinal),
+                "CSV con fecha de fin y duración conservando las columnas anteriores");
 
             // Exercise the actual HTML payload with over 100 matches and hostile replay text.
             // The legacy dashboard silently truncated history after 60 matches.
@@ -56,7 +62,8 @@ public static class SelfTest
                         new TeamMemberResult("mate", "Amiga de escuadra", false, 3, 1, 0),
                         new TeamMemberResult("unknown", "<script>cofre</script>", false, null, null, null)
                     } : Array.Empty<TeamMemberResult>(),
-                    Placement = i == 0 ? 1 : null
+                    Placement = i == 0 ? 1 : null,
+                    DurationSeconds = i == 0 ? 1092 : null
                 }).ToArray());
             var extendedPath = Dashboard.Write(hundreds, dir);
             var extendedHtml = File.ReadAllText(extendedPath);
@@ -106,11 +113,15 @@ public static class SelfTest
             using var json = System.Text.Json.JsonDocument.Parse(extendedHtml[start..end]);
             Check(json.RootElement.GetArrayLength() == 135 &&
                 json.RootElement[0].GetProperty("placement").GetInt32() == 1 &&
+                json.RootElement[0].GetProperty("duration").GetString() == "18:12" &&
+                json.RootElement[0].GetProperty("end").ValueKind == System.Text.Json.JsonValueKind.String &&
                 !json.RootElement[0].TryGetProperty("playlist", out _),
                 "historial de 135 partidas con posicion y sin columna modo");
             Check(extendedHtml.Contains("Cofres de party") &&
                 extendedHtml.Contains("class=\"squad-total\"") &&
-                extendedHtml.Contains("<th>Posición</th>"),
+                extendedHtml.Contains("<th>Posición</th>") &&
+                extendedHtml.Contains("<th>Fecha fin</th>") &&
+                extendedHtml.Contains("<th>Duración</th>"),
                 "cabecera con total de escuadra y columna Posicion");
             Check(json.RootElement[0].GetProperty("team").GetArrayLength() == 3 &&
                 json.RootElement[0].GetProperty("team")[2].GetProperty("chests").ValueKind ==
@@ -132,7 +143,7 @@ public static class SelfTest
                 using var writer = new BinaryWriter(stream);
                 writer.Write(0x1CA2E27Fu); // Fortnite replay header magic
                 writer.Write(6u);          // version before replay version 7's custom versions
-                writer.Write(0u);          // length
+                writer.Write(900000u);     // 15-minute replay length in milliseconds
                 writer.Write(0u);          // network version
                 writer.Write(0u);          // changelist
                 writer.Write(0);           // empty friendly name
@@ -161,6 +172,8 @@ public static class SelfTest
             File.SetLastWriteTimeUtc(simulatedReplay, DateTime.UtcNow.AddSeconds(-10));
             Check(ReplayProbe.Inspect(simulatedReplay) == (false, false),
                 "cabecera de replay finalizado con clave");
+            Check(ReplayProbe.ReadDurationSeconds(simulatedReplay) == 900,
+                "duración real del encabezado sin analizar cofres");
             Check(watch.Scan(once: false) == 0 && analyzeCalls == 0,
                 "primer chequeo de estabilidad sin análisis prematuro");
             Check(watch.Scan(once: false) == 1 && analyzeCalls == 1,
@@ -169,6 +182,17 @@ public static class SelfTest
                 "una repetición finalizada no se importa dos veces");
             Check(store.Snapshot().Matches.Count == 2,
                 "nueva partida persistida en SQLite sin perder el histórico");
+            // A historic replay can restore its duration without re-decoding events.
+            var olderReplay = Path.Combine(replayFolder, "historic-duration.replay");
+            File.Copy(simulatedReplay, olderReplay);
+            var olderInfo = new FileInfo(olderReplay);
+            var olderFingerprint = $"{olderInfo.Name}|{olderInfo.Length}|{olderInfo.LastWriteTimeUtc.Ticks}";
+            Check(store.Save(sample with { SessionId = "historic-duration", DurationSeconds = null },
+                olderFingerprint), "partida antigua guardada sin duración");
+            Check(store.BackfillDurations(replayFolder) == 1 &&
+                store.Snapshot().Matches.Single(m => m.SessionId == "historic-duration").DurationText == "15:00" &&
+                store.BackfillDurations(replayFolder) == 0,
+                "migración de duración de partidas antiguas sin duplicados");
 
             // Some files retain the live bit even after the real decryption key is set.
             var liveWithKey = Path.Combine(replayFolder, "stale-live.replay");
@@ -396,7 +420,8 @@ public static class SelfTest
             }
             var upgradedPositionStore = new TrackerStore(prePositionDir);
             Check(upgradedPositionStore.Save(sample with { SessionId = "position-upgrade" }, "pos-fp") &&
-                upgradedPositionStore.Snapshot().Matches.Single().Placement == 3,
+                upgradedPositionStore.Snapshot().Matches.Single().Placement == 3 &&
+                upgradedPositionStore.Snapshot().Matches.Single().DurationText == "18:12",
                 "migracion de SQLite añade posicion sin perder compatibilidad");
 
             // CI saves this self-contained report to test the actual HTML in Microsoft Edge.

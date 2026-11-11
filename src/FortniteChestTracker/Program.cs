@@ -44,6 +44,9 @@ public static class Program
                 return 0;
             }
             var store = new TrackerStore(data);
+            var recovered = store.BackfillDurations(demos);
+            if (recovered > 0)
+                Console.WriteLine($"Duración recuperada de {recovered} partidas antiguas.");
             var scanner = new ReplayScanner(store, demos, data);
             var report = Dashboard.Write(store.Snapshot(), data);
             if (!args.Contains("--no-browser")) Dashboard.OpenBrowser(report);

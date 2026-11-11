@@ -31,7 +31,8 @@ public sealed class TrackerStore
                 destroyed INTEGER NOT NULL CHECK (destroyed >= 0),
                 ammo_boxes INTEGER NOT NULL CHECK (ammo_boxes >= 0),
                 other_containers INTEGER NOT NULL CHECK (other_containers >= 0),
-                placement INTEGER CHECK (placement IS NULL OR placement BETWEEN 1 AND 100)
+                placement INTEGER CHECK (placement IS NULL OR placement BETWEEN 1 AND 100),
+                duration_seconds REAL CHECK (duration_seconds IS NULL OR duration_seconds > 0)
             );
             CREATE TABLE IF NOT EXISTS chest_events (
                 session_id TEXT NOT NULL REFERENCES matches(session_id),
@@ -66,6 +67,7 @@ public sealed class TrackerStore
             """;
         command.ExecuteNonQuery();
         EnsurePlacementColumn(db);
+        EnsureDurationColumn(db);
         RepairLegacyTimestamps(db, localZone);
     }
 
@@ -86,6 +88,22 @@ public sealed class TrackerStore
             ALTER TABLE matches ADD COLUMN placement INTEGER
             CHECK (placement IS NULL OR placement BETWEEN 1 AND 100)
             """;
+        alter.ExecuteNonQuery();
+    }
+
+    private static void EnsureDurationColumn(SqliteConnection db)
+    {
+        using var query = db.CreateCommand();
+        query.CommandText = "PRAGMA table_info(matches)";
+        using var reader = query.ExecuteReader();
+        var present = false;
+        while (reader.Read())
+            if (string.Equals(reader.GetString(1), "duration_seconds", StringComparison.OrdinalIgnoreCase))
+                present = true;
+        reader.Close();
+        if (present) return;
+        using var alter = db.CreateCommand();
+        alter.CommandText = "ALTER TABLE matches ADD COLUMN duration_seconds REAL CHECK (duration_seconds IS NULL OR duration_seconds > 0)";
         alter.ExecuteNonQuery();
     }
 
@@ -180,6 +198,59 @@ public sealed class TrackerStore
         var db = new SqliteConnection(_connectionString);
         db.Open();
         return db;
+    }
+
+    /// <summary>
+    /// Enrich old matches from available replay headers, once on startup.
+    /// No parsing, deletion, re-importing or changes to chest counts are involved.
+    /// Matches whose replay is no longer available keep an unknown duration.
+    /// </summary>
+    public int BackfillDurations(string replayFolder)
+    {
+        if (!Directory.Exists(replayFolder)) return 0;
+        using var db = Open();
+        var pending = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var select = db.CreateCommand())
+        {
+            select.CommandText = """
+                SELECT p.fingerprint FROM processed_replays p
+                JOIN matches m ON p.session_id = m.session_id
+                WHERE m.duration_seconds IS NULL
+                """;
+            using var reader = select.ExecuteReader();
+            while (reader.Read()) pending.Add(reader.GetString(0));
+        }
+        if (pending.Count == 0) return 0;
+
+        using var update = db.CreateCommand();
+        update.CommandText = """
+            UPDATE matches SET duration_seconds = $duration
+            WHERE duration_seconds IS NULL AND session_id IN (
+                SELECT session_id FROM processed_replays WHERE fingerprint = $fingerprint)
+            """;
+        var duration = update.Parameters.Add("$duration", SqliteType.Real);
+        var fingerprint = update.Parameters.Add("$fingerprint", SqliteType.Text);
+        var updated = 0;
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(replayFolder, "*.replay", SearchOption.TopDirectoryOnly))
+            {
+                FileInfo file;
+                try { file = new FileInfo(path); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { continue; }
+                if (!file.Exists) continue;
+                var key = $"{file.Name}|{file.Length}|{file.LastWriteTimeUtc.Ticks}";
+                if (!pending.Contains(key)) continue;
+                var seconds = ReplayProbe.ReadDurationSeconds(path);
+                if (seconds is not > 0) continue;
+                duration.Value = seconds.Value;
+                fingerprint.Value = key;
+                updated += update.ExecuteNonQuery();
+            }
+        }
+        catch (IOException) { /* Old replays are optional. */ }
+        catch (UnauthorizedAccessException) { }
+        return updated;
     }
 
     public bool HasProcessed(string fingerprint)
@@ -323,8 +394,8 @@ public sealed class TrackerStore
         using var insert = db.CreateCommand();
         insert.Transaction = transaction;
         insert.CommandText = """
-            INSERT OR IGNORE INTO matches(session_id, started_utc, player, epic_id, playlist, chests, destroyed, ammo_boxes, other_containers, placement)
-            VALUES($id,$time,$player,$epic,$playlist,$chests,$destroyed,$ammo,$others,$placement)
+            INSERT OR IGNORE INTO matches(session_id, started_utc, player, epic_id, playlist, chests, destroyed, ammo_boxes, other_containers, placement, duration_seconds)
+            VALUES($id,$time,$player,$epic,$playlist,$chests,$destroyed,$ammo,$others,$placement,$duration)
             """;
         insert.Parameters.AddWithValue("$id", match.SessionId);
         insert.Parameters.AddWithValue("$time", match.StartedUtc.ToString("O"));
@@ -336,6 +407,7 @@ public sealed class TrackerStore
         insert.Parameters.AddWithValue("$ammo", match.AmmoBoxes);
         insert.Parameters.AddWithValue("$others", match.OtherContainers);
         insert.Parameters.AddWithValue("$placement", (object?)match.Placement ?? DBNull.Value);
+        insert.Parameters.AddWithValue("$duration", (object?)match.DurationSeconds ?? DBNull.Value);
         var inserted = insert.ExecuteNonQuery() > 0;
 
         if (inserted)
@@ -386,7 +458,7 @@ public sealed class TrackerStore
         using var db = Open();
         using var command = db.CreateCommand();
         command.CommandText = """
-            SELECT session_id, started_utc, player, playlist, chests, destroyed, ammo_boxes, other_containers, placement
+            SELECT session_id, started_utc, player, playlist, chests, destroyed, ammo_boxes, other_containers, placement, duration_seconds
             FROM matches
             WHERE TRIM(playlist) COLLATE NOCASE IN (
                 'Playlist_NoBuildBR_Solo', 'Playlist_NoBuildBR_Duo',
@@ -398,7 +470,8 @@ public sealed class TrackerStore
         {
             matches.Add(new MatchSummary(reader.GetString(0), DateTime.Parse(reader.GetString(1), null, System.Globalization.DateTimeStyles.RoundtripKind),
                 reader.GetString(2), reader.GetString(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(6), reader.GetInt32(7))
-            { Placement = reader.IsDBNull(8) ? null : reader.GetInt32(8) });
+            { Placement = reader.IsDBNull(8) ? null : reader.GetInt32(8),
+              DurationSeconds = reader.IsDBNull(9) ? null : reader.GetDouble(9) });
         }
         reader.Close();
         var groups = new Dictionary<string, List<TeamMemberResult>>(StringComparer.Ordinal);
@@ -438,6 +511,20 @@ public sealed record MatchSummary(string SessionId, DateTime Date, string Player
 {
     public IReadOnlyList<TeamMemberResult> TeamMembers { get; init; } = Array.Empty<TeamMemberResult>();
     public int? Placement { get; init; }
+    public double? DurationSeconds { get; init; }
+    public DateTime? EndedUtc => DurationSeconds is double seconds && seconds > 0
+        ? Date.AddSeconds(seconds) : null;
+    public string DurationText => FormatDuration(DurationSeconds);
+
+    public static string FormatDuration(double? seconds)
+    {
+        if (seconds is not double value || value <= 0 || double.IsInfinity(value) || double.IsNaN(value))
+            return "—";
+        var time = TimeSpan.FromSeconds(Math.Round(value));
+        return time.TotalHours >= 1
+            ? $"{(int)time.TotalHours:00}:{time.Minutes:00}:{time.Seconds:00}"
+            : $"{(int)time.TotalMinutes:00}:{time.Seconds:00}";
+    }
 }
 
 public sealed record TrackerSnapshot(IReadOnlyList<MatchSummary> Matches)
