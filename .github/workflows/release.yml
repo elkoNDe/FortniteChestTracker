@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.3: after Windows tests, publish a standalone EXE and SHA256 file.
+# v0.3.4: publish the verified party-period statistics and unified date layout.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
