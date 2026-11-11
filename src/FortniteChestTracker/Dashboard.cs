@@ -70,6 +70,7 @@ public static class Dashboard
                 player = m.Player,
                 placement = m.Placement,
                 chests = m.Chests,
+                party = m.Chests + m.TeamMembers.Where(t => !t.IsOwner).Sum(t => t.Chests ?? 0),
                 destroyed = m.Destroyed,
                 ammo = m.AmmoBoxes,
                 team = m.TeamMembers.Select(p => new
@@ -129,6 +130,8 @@ public static class Dashboard
             .metric .num, .period-metric .num { font-size: 31px; font-weight: 750; margin-top: 10px; }
             .metric .small, .period-metric .small { font-size: 12px; color: #8498b7; margin-top: 6px; }
             .period-metric .num { color: #f9d47b; }
+            .period-metric .party-count { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #30415f; color: #9fc8ff; font-size: 13px; flex-wrap: wrap; }
+            .period-metric .party-count strong { color: #bbd9ff; font-size: 18px; }
             .panel { margin-top: 20px; }
             h2 { font-size: 19px; letter-spacing: -.3px; margin: 0; }
             .toolbar { justify-content: flex-start; }
@@ -147,8 +150,11 @@ public static class Dashboard
             .chart-bar { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; justify-content: flex-end; border: 1px solid transparent; border-radius: 9px 9px 0 0; color: #9aacc8; padding: 8px 2px 0; background: transparent; cursor: pointer; font: inherit; }
             .chart-bar:hover, .chart-bar.selected { background: #223a62; border-color: #4a6699; }
             .chart-value { font-size: 12px; color: #f6d58a; font-weight: 650; }
-            .chart-rail { width: 100%; height: 145px; display: flex; align-items: flex-end; justify-content: center; }
-            .chart-fill { display: block; width: 90%; max-width: 54px; min-height: 3px; border-radius: 6px 6px 0 0; background: linear-gradient(0deg, #a87924, #f6d889); }
+            .chart-rail { width: 100%; height: 145px; display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+            .chart-fill { display: block; width: 44%; max-width: 26px; min-height: 0; border-radius: 6px 6px 0 0; background: linear-gradient(0deg, #a87924, #f6d889); }
+            .chart-fill-party { background: linear-gradient(0deg, #3463a5, #b0d8ff); }
+            .chart-legend { color: #96a6c4; font-size: 12px; }
+            .chart-legend .owner { color: #f6d889; } .chart-legend .party { color: #b0d8ff; }
             .chart-label { font-size: 11px; white-space: nowrap; padding-bottom: 6px; }
             .tablewrap { overflow-x: auto; margin-top: 17px; }
             table { width: 100%; border-collapse: collapse; white-space: nowrap; text-align: left; font-size: 13px; }
@@ -162,6 +168,8 @@ public static class Dashboard
             .squad-owner td.player-cell::after { content: " · Tú"; color: #8fb2e6; font-weight: 500; font-size: 11px; }
             .group-start td { border-top: 1px solid #385073; }
             td[rowspan] { vertical-align: top; padding-top: 14px; }
+            .date-cell .date-start { color: #dce6f9; }
+            .date-cell .date-end { color: #91a6c9; font-size: 12px; margin-top: 5px; }
             .unobserved { color: #758ba8; }
 
             .empty { padding: 25px 0; color: #9cacca; }
@@ -224,9 +232,9 @@ public static class Dashboard
         sb.Append("""
             </section>
             <section class="period-metrics" aria-label="Estadísticas recientes">
-              <article class="period-metric"><div class="label">Hoy</div><div class="num" id="today-chests">—</div><div class="small" id="today-games"></div></article>
-              <article class="period-metric"><div class="label">Esta semana · lunes a domingo</div><div class="num" id="week-chests">—</div><div class="small" id="week-games"></div></article>
-              <article class="period-metric"><div class="label">Este mes</div><div class="num" id="month-chests">—</div><div class="small" id="month-games"></div></article>
+              <article class="period-metric"><div class="label">Hoy</div><div class="num" id="today-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="today-party">—</strong><span>cofres observados</span></div><div class="small" id="today-games"></div></article>
+              <article class="period-metric"><div class="label">Esta semana · lunes a domingo</div><div class="num" id="week-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="week-party">—</strong><span>cofres observados</span></div><div class="small" id="week-games"></div></article>
+              <article class="period-metric"><div class="label">Este mes</div><div class="num" id="month-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="month-party">—</strong><span>cofres observados</span></div><div class="small" id="month-games"></div></article>
             </section>
             <section class="panel" aria-label="Cofres por periodo">
               <div class="section-head">
@@ -236,7 +244,7 @@ public static class Dashboard
                   <button type="button" data-unit="month" aria-pressed="false">Mensual</button>
                 </div>
               </div>
-              <div class="period-summary"><strong id="period-total">—</strong><span id="period-games">—</span></div>
+              <div class="period-summary"><strong id="period-total">—</strong><strong id="period-party">—</strong><span id="period-games">—</span><span class="chart-legend"><span class="owner">■</span> Tú · <span class="party">■</span> Party (incluye tus cofres)</span></div>
               <div class="chart-scroll"><div class="chart" id="period-chart" aria-label="Gráfica interactiva de cofres"></div></div>
             </section>
             <section class="panel" id="history-panel">
@@ -263,9 +271,9 @@ public static class Dashboard
                   </select>
                 </div>
               </div>
-              <div class="period-summary"><strong id="history-total">—</strong><span id="history-count"></span></div>
+              <div class="period-summary"><strong id="history-total">—</strong><strong id="history-party">—</strong><span id="history-count"></span></div>
               <div class="tablewrap" id="history-tablewrap">
-                <table><thead><tr><th>Fecha inicio</th><th>Fecha fin</th><th>Duración</th><th>Jugador / escuadra</th><th>Posición</th><th>Cofres</th><th>Destruidos</th><th>Munición</th></tr></thead>
+                <table><thead><tr><th>Fecha</th><th>Duración</th><th>Jugador / escuadra</th><th>Posición</th><th>Cofres</th><th>Destruidos</th><th>Munición</th></tr></thead>
                 <tbody id="history-body"></tbody></table>
               </div>
               <div class="empty" id="history-empty" hidden>Sin partidas en este periodo. Prueba a cambiar el filtro.</div>

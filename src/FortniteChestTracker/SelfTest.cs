@@ -114,14 +114,23 @@ public static class SelfTest
             Check(json.RootElement.GetArrayLength() == 135 &&
                 json.RootElement[0].GetProperty("placement").GetInt32() == 1 &&
                 json.RootElement[0].GetProperty("duration").GetString() == "18:12" &&
+                json.RootElement[0].GetProperty("party").GetInt32() == 3 &&
+                json.RootElement[1].GetProperty("party").GetInt32() == 1 &&
                 json.RootElement[0].GetProperty("end").ValueKind == System.Text.Json.JsonValueKind.String &&
                 !json.RootElement[0].TryGetProperty("playlist", out _),
                 "historial de 135 partidas con posicion y sin columna modo");
             Check(extendedHtml.Contains("Cofres de party") &&
                 extendedHtml.Contains("class=\"squad-total\"") &&
                 extendedHtml.Contains("<th>Posición</th>") &&
-                extendedHtml.Contains("<th>Fecha fin</th>") &&
-                extendedHtml.Contains("<th>Duración</th>"),
+                extendedHtml.Contains("<th>Fecha</th>") &&
+                !extendedHtml.Contains("<th>Fecha inicio</th>") &&
+                !extendedHtml.Contains("<th>Fecha fin</th>") &&
+                extendedHtml.Contains("<th>Duración</th>") &&
+                extendedHtml.Contains("id=\"today-party\"") &&
+                extendedHtml.Contains("id=\"week-party\"") &&
+                extendedHtml.Contains("id=\"month-party\"") &&
+                extendedHtml.Contains("id=\"period-party\"") &&
+                extendedHtml.Contains("id=\"history-party\""),
                 "cabecera con total de escuadra y columna Posicion");
             Check(json.RootElement[0].GetProperty("team").GetArrayLength() == 3 &&
                 json.RootElement[0].GetProperty("team")[2].GetProperty("chests").ValueKind ==
@@ -270,9 +279,10 @@ public static class SelfTest
                 new TrackerStore(legacyFolder, madrid).Snapshot().Matches
                     .Single(m => m.SessionId == "correct-future").Date == winterUtc,
                 "las nuevas partidas correctamente fechadas no se modifican");
-            Check(extendedHtml.Contains("<th>Fecha inicio</th>") &&
+            Check(extendedHtml.Contains("<th>Fecha</th>") &&
+                !extendedHtml.Contains("<th>Fecha fin</th>") &&
                 File.ReadLines(Path.Combine(dir, "matches.csv")).First().StartsWith("Fecha inicio;Fecha fin;Duracion;Jugador;Posicion;"),
-                "columnas Fecha inicio y Posicion en HTML y CSV");
+                "una columna Fecha en HTML y exportacion CSV intacta");
 
             // The in-game TeamIndex, not the social lobby, identifies squads.
             // Enemy searches must never be included.

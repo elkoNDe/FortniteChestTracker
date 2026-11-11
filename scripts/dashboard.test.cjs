@@ -84,3 +84,19 @@ test('paginación con saltos de 10: 10, 20, 30, ... 100', () => {
     assert.equal(paginate(matches, 99, size).page, Math.ceil(135 / size));
   }
 });
+
+test('totales por periodo de party: personales sin duplicar y sin inventar compañeros', () => {
+  const rows = [
+    { when: new Date(2026, 10, 10, 12), chests: 5, party: 12 },
+    { when: new Date(2026, 10, 10, 18), chests: 3, party: 3 },
+    { when: new Date(2026, 10, 11, 12), chests: 8, party: 11 },
+    { when: new Date(2026, 10, 12, 12), chests: 4 }
+  ];
+  const days = bucketsFor(rows, 'day', 3, new Date(2026, 10, 12, 20));
+  assert.deepEqual(days.map(x => x.chests), [8, 8, 4]);
+  assert.deepEqual(days.map(x => x.party), [15, 11, 4]);
+  assert.deepEqual(days.map(x => x.games), [2, 1, 1]);
+  const month = bucketsFor(rows, 'month', 1, new Date(2026, 10, 12));
+  assert.equal(month[0].chests, 20);
+  assert.equal(month[0].party, 30);
+});

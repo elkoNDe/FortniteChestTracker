@@ -49,6 +49,12 @@ try {
   assert.match(html, /id="today-chests">[0-9]/, "El script no actualiza los cofres de hoy.");
   assert.match(html, /id="week-chests">[0-9]/, "El script no actualiza los cofres semanales.");
   assert.match(html, /id="month-chests">[0-9]/, "El script no actualiza los cofres mensuales.");
+  for (const period of ["today", "week", "month"]) {
+    assert.match(html, new RegExp('id="' + period + '-party">[0-9]'),
+      "No se muestra el total observado de party para " + period);
+  }
+  assert.match(html, /id="period-party">Party: [0-9]/, "El gráfico no totaliza la party.");
+  assert.match(html, /id="history-party">Party: [0-9]/, "El filtro no totaliza la party.");
   assert.match(html, /id="history-page">Página 1 de 14</, "La paginación no se ha inicializado.");
 
   const history = html.match(/<tbody id="history-body">([\s\S]*?)<\/tbody>/);
@@ -60,7 +66,11 @@ try {
   assert.match(history[1], /rowspan="3"/,
     "La fecha y la posición de una escuadra deben aparecer una sola vez.");
   assert.match(html, /<th>Posición<\/th>/, "Falta la columna Posición.");
-  assert.match(html, /<th>Fecha fin<\/th>/, "Falta la fecha fin.");
+  assert.match(html, /<th>Fecha<\/th>/, "Falta la columna Fecha unificada.");
+  assert.doesNotMatch(html, /<th>Fecha fin<\/th>/, "Fecha fin no debe ocupar otra columna.");
+  assert.doesNotMatch(html, /<th>Fecha inicio<\/th>/, "Fecha inicio no debe ocupar otra columna.");
+  assert.match(history[1], /class="date-start">Inicio: /, "Falta inicio en Fecha.");
+  assert.match(history[1], /class="date-end">Fin: /, "Falta fin en Fecha.");
   assert.match(html, /<th>Duración<\/th>/, "Falta la duración.");
   assert.match(history[1], /18:12/, "Falta la duración de la primera partida.");
   assert.match(html, /<option value="90">90<\/option>/, "Paginación no configurable de 10 en 10.");
@@ -88,6 +98,8 @@ try {
   const chart = html.match(/<div class="chart" id="period-chart"[^>]*>([\s\S]*?)<\/div>/);
   assert.ok(chart, "No existe el contenedor de la gráfica.");
   assert.ok((html.match(/class="chart-bar"/g) || []).length >= 12, "No se han generado las barras semanales.");
+  assert.ok((html.match(/class="chart-fill chart-fill-party"/g) || []).length >= 12,
+    "La gráfica no muestra las barras de la party.");
 
   assert.match(html, /data-unit="day"[^>]*aria-pressed="true"/, "El gráfico no inicia en Diario.");
   assert.match(html, /data-unit="month"/, "Falta la opción Mensual.");

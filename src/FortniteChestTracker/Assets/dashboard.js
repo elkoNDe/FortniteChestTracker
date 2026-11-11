@@ -36,14 +36,16 @@
       const start = shiftPeriod(currentStart, unit, -index);
       const end = shiftPeriod(start, unit, 1);
       let chests = 0;
+      let party = 0;
       let games = 0;
       for (const match of matches) {
         if (inRange(match, start, end)) {
           chests += match.chests;
+          party += match.party ?? match.chests;
           games++;
         }
       }
-      groups.push({ start, end, chests, games });
+      groups.push({ start, end, chests, party, games });
     }
     return groups;
   }
@@ -131,6 +133,7 @@
     for (const set of sets) {
       const rows = matches.filter(m => inRange(m, set.start, set.end));
       $(set.id + "-chests").textContent = fmtNumber.format(rows.reduce((sum, m) => sum + m.chests, 0));
+      $(set.id + "-party").textContent = fmtNumber.format(rows.reduce((sum, m) => sum + (m.party ?? m.chests), 0));
       $(set.id + "-games").textContent = rows.length + (rows.length === 1 ? " partida" : " partidas");
     }
   }
@@ -146,31 +149,37 @@
     const chart = $("period-chart");
     chart.replaceChildren();
     const total = groups.reduce((sum, item) => sum + item.chests, 0);
+    const partyTotal = groups.reduce((sum, item) => sum + item.party, 0);
     const games = groups.reduce((sum, item) => sum + item.games, 0);
     $("period-subtitle").textContent = "Últimos " + groups.length + " " +
       (state.unit === "day" ? "días" : "meses") +
       " · Pulsa una barra para filtrar el historial";
-    $("period-total").textContent = fmtNumber.format(total) + " cofres";
+    $("period-total").textContent = "Tú: " + fmtNumber.format(total) + " cofres";
+    $("period-party").textContent = "Party: " + fmtNumber.format(partyTotal) + " cofres";
     $("period-games").textContent = games + (games === 1 ? " partida" : " partidas");
 
-    const highest = Math.max(1, ...groups.map(item => item.chests));
+    const highest = Math.max(1, ...groups.map(item => item.party));
     for (const group of groups) {
       const bar = document.createElement("button");
       bar.type = "button";
       bar.className = "chart-bar";
       if (state.filter === "bucket" && state.range &&
           state.range.start === group.start.toISOString()) bar.classList.add("selected");
-      bar.title = rangeLabel(group.start, group.end) + ": " + group.chests + " cofres en " + group.games + " partidas";
+      bar.title = rangeLabel(group.start, group.end) + ": tú " + group.chests +
+      " cofres, party " + group.party + " observados, en " + group.games + " partidas";
       bar.setAttribute("aria-label", bar.title + ". Filtrar historial");
       const count = document.createElement("span");
       count.className = "chart-value";
-      count.textContent = fmtNumber.format(group.chests);
+      count.textContent = fmtNumber.format(group.chests) + " / " + fmtNumber.format(group.party);
       const rail = document.createElement("span");
       rail.className = "chart-rail";
       const fill = document.createElement("span");
       fill.className = "chart-fill";
-      fill.style.height = Math.max(2, Math.round(100 * group.chests / highest)) + "%";
-      rail.append(fill);
+      fill.style.height = group.chests > 0 ? Math.max(2, Math.round(100 * group.chests / highest)) + "%" : "0";
+      const partyFill = document.createElement("span");
+      partyFill.className = "chart-fill chart-fill-party";
+      partyFill.style.height = group.party > 0 ? Math.max(2, Math.round(100 * group.party / highest)) + "%" : "0";
+      rail.append(fill, partyFill);
       const label = document.createElement("span");
       label.className = "chart-label";
       label.textContent = bucketLabel(group, state.unit);
@@ -235,16 +244,19 @@
         if (index === 0) {
           const date = document.createElement("td");
           date.rowSpan = players.length;
-          date.textContent = formatDate(match.when, {
+          date.className = "date-cell";
+          const start = document.createElement("div");
+          start.className = "date-start";
+          start.textContent = "Inicio: " + formatDate(match.when, {
             day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
           });
-          row.append(date);
-          const end = document.createElement("td");
-          end.rowSpan = players.length;
-          end.textContent = match.end ? formatDate(new Date(match.end), {
+          const end = document.createElement("div");
+          end.className = "date-end";
+          end.textContent = "Fin: " + (match.end ? formatDate(new Date(match.end), {
             day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
-          }) : "—";
-          row.append(end);
+          }) : "—");
+          date.append(start, end);
+          row.append(date);
           const duration = document.createElement("td");
           duration.rowSpan = players.length;
           duration.textContent = match.duration || "—";
@@ -276,7 +288,8 @@
     $("history-count").textContent = filtered.length === 0
       ? "0 partidas"
       : "Mostrando " + (first + 1) + "–" + (first + visible.length) + " de " + fmtNumber.format(filtered.length) + " partidas";
-    $("history-total").textContent = fmtNumber.format(filtered.reduce((total, m) => total + m.chests, 0)) + " cofres en el periodo";
+    $("history-total").textContent = "Tú: " + fmtNumber.format(filtered.reduce((total, m) => total + m.chests, 0)) + " cofres";
+    $("history-party").textContent = "Party: " + fmtNumber.format(filtered.reduce((total, m) => total + (m.party ?? m.chests), 0)) + " cofres observados";
     $("page-prev").disabled = state.page === 1;
     $("page-next").disabled = state.page === result.pages;
   }

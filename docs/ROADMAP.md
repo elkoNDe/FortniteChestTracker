@@ -1,6 +1,6 @@
 # Hoja de ruta
 
-## Estado actual — v0.3.3
+## Estado actual — v0.3.4
 
 - [x] Lectura de repeticiones de Fortnite sin acceder al proceso del juego
 - [x] Clasificación de cofres y atribución al propietario de la repetición
@@ -11,6 +11,7 @@
 - [x] Panel HTML con gráficas, filtros, posición final y paginación
 - [x] Fecha de fin y duración del replay; recuperación desde replays históricos disponibles
 - [x] Paginación de 10 a 100 partidas en incrementos de 10
+- [x] Totales observados de party por periodo y filtros, y Fecha unificada con inicio/fin
 - [x] Compilación y pruebas automáticas en Windows con GitHub Actions
 - [x] Distribución autónoma en EXE y variante portable
 - [x] Publicación de versiones mediante GitHub Releases
