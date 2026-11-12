@@ -352,3 +352,11 @@ test('El resumen de cofres de party muestra solo Total', () => {
   assert.doesNotMatch(dashboard,
     /Total observado\. Puede faltar actividad de compañeros no identificados/);
 });
+
+test('La estimación de Party del ticket termina con punto', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname,
+    '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  assert.match(dashboard, /· \{partyChests\} cofres, contando los tuyos\.<\/div>/);
+});
