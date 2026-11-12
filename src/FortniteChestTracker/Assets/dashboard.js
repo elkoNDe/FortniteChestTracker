@@ -86,6 +86,48 @@
     return;
   }
 
+  // Offline heartbeat: the HTML is refreshed by the monitor every ~15 s.
+  // If the EXE has exited or crashed, the browser itself marks it disconnected,
+  // even when the last dashboard.html is still on disk.
+  const monitorNode = document.getElementById("monitor-data");
+  const monitorSnapshot = monitorNode ? JSON.parse(monitorNode.textContent || "null") : null;
+  function renderMonitorStatus() {
+    const box = document.getElementById("monitor-indicator");
+    if (!box) return;
+    const names = {
+      starting: "Iniciando monitor", watching: "Monitor activo",
+      waiting: "Esperando repetición", processing: "Analizando repetición",
+      error: "Atención: revisar monitor", stopped: "Monitor detenido",
+      offline: "Monitor desconectado"
+    };
+    const lastCheck = Date.parse(monitorSnapshot?.checkedUtc ?? "");
+    let current = monitorSnapshot?.state || "stopped";
+    if (monitorSnapshot && current !== "stopped" &&
+        (!Number.isFinite(lastCheck) || Date.now() - lastCheck > 45000)) {
+      current = "offline";
+    }
+    box.dataset.state = current;
+    document.getElementById("monitor-title").textContent = names[current] || names.offline;
+    let details;
+    if (!monitorSnapshot) details = "Sin información del proceso";
+    else if (current === "offline") details = "Sin comprobaciones recientes; revisa la bandeja";
+    else if (current === "stopped") details = "El contador ya no está vigilando partidas";
+    else {
+      const time = Number.isFinite(lastCheck)
+        ? new Date(lastCheck).toLocaleTimeString("es-ES", {
+            hour: "2-digit", minute: "2-digit", second: "2-digit"
+          }) : "—";
+      const pending = Number(monitorSnapshot.pendingCount) || 0;
+      details = "Última revisión " + time + " · " + pending + " pendiente" +
+        (pending === 1 ? "" : "s");
+      if (current === "error" && monitorSnapshot.detail)
+        details = monitorSnapshot.detail;
+    }
+    document.getElementById("monitor-details").textContent = details;
+  }
+  renderMonitorStatus();
+  setInterval(renderMonitorStatus, 5000);
+
   const dataNode = document.getElementById("match-data");
   const matches = JSON.parse(dataNode.textContent || "[]").map(item => ({
     ...item,
