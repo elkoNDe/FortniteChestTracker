@@ -46,6 +46,14 @@ try {
   // This catches the regression where only static overall statistics render:
   // a blocked inline script leaves today/weekly/monthly at the em dash, 0 chart bars,
   // and no match rows.
+  assert.match(html, /id="monitor-indicator"[^>]*data-state="watching"/,
+    "El estado del monitor no se inicializa con el estado real.");
+  assert.match(html, /id="monitor-title">Monitor activo</,
+    "El dashboard no informa que el monitor está funcionando.");
+  assert.match(html, /id="monitor-details">Última revisión[^<]*2 pendientes</,
+    "Falta la hora de revisión o el número de repeticiones pendientes.");
+  assert.match(html, /id="monitor-imported">Sin nuevas partidas en esta sesión</,
+    "El monitor no indica si ha importado partidas nuevas.");
   assert.match(html, /id="today-chests">[0-9]/, "El script no actualiza los cofres de hoy.");
   assert.match(html, /id="week-chests">[0-9]/, "El script no actualiza los cofres semanales.");
   assert.match(html, /id="month-chests">[0-9]/, "El script no actualiza los cofres mensuales.");
