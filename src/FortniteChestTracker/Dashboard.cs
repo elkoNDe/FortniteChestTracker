@@ -275,6 +275,30 @@ public static class Dashboard
                 --owner-top: #ffc46d; --team-bottom: #b64b63; --team-top: #ff997d;
                 --row-alt: #3c2830; --table-rule: #59373f; --radius: 20px; --hero-radius: 26px;
             }
+            /* Ember: volcanic charcoal, copper highlights and hard-edged instruments. */
+            html[data-theme="ember"] {
+                --page: #110e0d; --glow: #a541192f; --text: #fff2e7; --muted: #c7a394;
+                --surface: #201814; --line: #5e3928; --accent: #ff8848; --team: #ffd3a5;
+                --hero-a: #562619; --hero-b: #2f1b16; --hero-c: #181210; --hero-line: #b35a30;
+                --hero-note: #e6b4a0; --hero-label: #ffbe8e; --hero-ornament: #ff74320d;
+                --control-bg: #241813; --control-border: #76412b; --control-text: #ffeede;
+                --button-bg: #3b241c; --button-border: #854528; --selected: #ab4823;
+                --hover: #583122; --chart-hover: #4b2a1e; --owner-bottom: #c0461f;
+                --owner-top: #ffa351; --team-bottom: #8e5535; --team-top: #ffe0ad;
+                --row-alt: #2d1e18; --table-rule: #4a3024; --radius: 6px; --hero-radius: 9px;
+            }
+            /* Blueprint: crisp drafting lines, technical grid and data-first panels. */
+            html[data-theme="blueprint"] {
+                --page: #092944; --glow: #217cb04d; --text: #e7f9ff; --muted: #a0c8db;
+                --surface: #103853; --line: #47748c; --accent: #81e7fa; --team: #f9d880;
+                --hero-a: #155074; --hero-b: #0e3b5c; --hero-c: #0a2e4c; --hero-line: #7bbbd4;
+                --hero-note: #b6dbe7; --hero-label: #a9e9fd; --hero-ornament: #f1fcff10;
+                --control-bg: #113852; --control-border: #79b1c9; --control-text: #e1f7ff;
+                --button-bg: #164663; --button-border: #77aac1; --selected: #216f91;
+                --hover: #205978; --chart-hover: #205473; --owner-bottom: #2aa6cc;
+                --owner-top: #94edfa; --team-bottom: #a88c3a; --team-top: #ffe1a0;
+                --row-alt: #15415e; --table-rule: #315e79; --radius: 2px; --hero-radius: 2px;
+            }
             html { background: var(--page); color: var(--text); }
             body { background: radial-gradient(ellipse at 12% -8%, var(--glow) 0%, transparent 47%), var(--page); }
             .subtitle, .secondary, .period-summary, .metric .label, .period-metric .label,
@@ -328,10 +352,218 @@ public static class Dashboard
             html[data-theme="studio"] .segment button.active { color: #fff; }
             html[data-theme="studio"] .chart-value { color: #9f472e; }
             html[data-theme="prism"] .hero { box-shadow: 0 18px 40px #6b3d9926; }
+            /* Arena: esports scoreboard, angular panels and stadium highlights. */
+            html[data-theme="arena"] body {
+                background: radial-gradient(ellipse at 10% -10%, #3b6cb263, transparent 48%),
+                    radial-gradient(ellipse at 95% 9%, #f7c66d16, transparent 35%), var(--page);
+            }
+            html[data-theme="arena"] .hero {
+                border-radius: 8px; border-color: #5d73b6;
+                background: radial-gradient(ellipse at 82% 0%, #d8e0ff24, transparent 44%),
+                    linear-gradient(108deg, #2d4fa1, #192c64 57%, #101c38);
+                clip-path: polygon(0 0, calc(100% - 29px) 0, 100% 29px, 100% 100%, 0 100%);
+                box-shadow: inset 0 2px 0 #a8c5ff44;
+            }
+            html[data-theme="arena"] .hero:after {
+                content: "✦"; top: -40px; right: 4%; font-size: 195px;
+            }
+            html[data-theme="arena"] .total { font-style: italic; letter-spacing: -4px; }
+            html[data-theme="arena"] .metric, html[data-theme="arena"] .period-metric {
+                border-radius: 5px; border-top: 2px solid #6984c5;
+                background: linear-gradient(160deg, #1a2d4c, var(--surface) 66%);
+            }
+            html[data-theme="arena"] .panel { border-radius: 9px; }
+            html[data-theme="arena"] .chart-fill, html[data-theme="arena"] .chart-bar {
+                border-radius: 2px 2px 0 0;
+            }
+            html[data-theme="arena"] .segment button.active {
+                box-shadow: inset 0 -3px 0 var(--accent);
+            }
+            html[data-theme="arena"] h2 { text-transform: uppercase; font-size: 16px; letter-spacing: 1.4px; }
+
+            /* Tactical HUD: subtle radar grid, readout type, indexed controls;
+               no vertical left accent on any panel or hero. */
+            html[data-theme="tactical"] body {
+                background: radial-gradient(circle at 88% 0%, #2d6d4829, transparent 38%),
+                    repeating-linear-gradient(0deg, transparent 0 27px, #76b39909 27px 28px),
+                    repeating-linear-gradient(90deg, transparent 0 27px, #76b39909 27px 28px), var(--page);
+            }
+            html[data-theme="tactical"] .hero {
+                background: radial-gradient(circle at 88% 28%, #9ae3b00b, transparent 32%),
+                    linear-gradient(110deg, #173d34, #102c29 65%, #0a2321);
+                box-shadow: inset 0 1px 0 #b2f5be35, inset 0 -1px 0 #b2f5be20;
+            }
+            html[data-theme="tactical"] .hero:after {
+                content: "⌖"; font-family: Consolas, monospace;
+                font-size: 176px; right: 8%; top: -26px; color: #b8f47f12;
+            }
+            html[data-theme="tactical"] .metric, html[data-theme="tactical"] .period-metric,
+            html[data-theme="tactical"] .panel {
+                background: linear-gradient(180deg, #18312b 0, var(--surface) 68px);
+                box-shadow: inset 0 1px 0 #97e2b51d;
+            }
+            html[data-theme="tactical"] .eyebrow, html[data-theme="tactical"] .metric .label,
+            html[data-theme="tactical"] .period-metric .label,
+            html[data-theme="tactical"] th {
+                font-family: Consolas, "Courier New", monospace; letter-spacing: 1.1px;
+            }
+            html[data-theme="tactical"] .metric .num, html[data-theme="tactical"] .total,
+            html[data-theme="tactical"] .period-metric .num,
+            html[data-theme="tactical"] .squad-total {
+                font-family: Consolas, "Courier New", monospace; font-variant-numeric: tabular-nums;
+            }
+            html[data-theme="tactical"] .chart-fill {
+                border-radius: 1px 1px 0 0; outline: 1px solid #a7e6ae20; outline-offset: -2px;
+            }
+            html[data-theme="tactical"] .segment button.active {
+                outline: 1px solid #b8f47f83; outline-offset: -1px;
+            }
+            html[data-theme="tactical"] .theme-select, html[data-theme="tactical"] .button,
+            html[data-theme="tactical"] .control { border-radius: 4px; }
+
+            /* Studio Light: airy editorial layout, restrained warm-paper texture. */
+            html[data-theme="studio"] body {
+                background: linear-gradient(125deg, #fffdf8 0%, #f7f2eb 48%, #f4eee7 100%);
+            }
+            html[data-theme="studio"] .shell { max-width: 1260px; }
+            html[data-theme="studio"] .hero {
+                background: linear-gradient(110deg, #fff7ed 0%, #fffdfa 72%, #f6ebdb);
+                border: 1px solid #e9d8c4; padding-top: 38px; padding-bottom: 38px;
+            }
+            html[data-theme="studio"] .hero:after {
+                content: "○"; font-family: Georgia, serif; font-size: 230px;
+                right: 6%; top: -55px; color: #c77e3412;
+            }
+            html[data-theme="studio"] h2 {
+                font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500;
+            }
+            html[data-theme="studio"] .total, html[data-theme="studio"] .squad-total {
+                font-family: Georgia, "Times New Roman", serif; font-weight: 600; letter-spacing: -2px;
+            }
+            html[data-theme="studio"] .metric, html[data-theme="studio"] .period-metric {
+                border-color: #f1e8dd; box-shadow: 0 12px 36px #6b543410;
+                padding: 25px 22px;
+            }
+            html[data-theme="studio"] .panel {
+                border-color: #eee4d9; padding: 28px;
+            }
+            html[data-theme="studio"] .chart-fill {
+                width: 32%; max-width: 19px; border-radius: 8px 8px 0 0;
+            }
+            html[data-theme="studio"] th {
+                text-transform: none; font-size: 12px; letter-spacing: .15px; font-weight: 600;
+            }
+            html[data-theme="studio"] .metric .label, html[data-theme="studio"] .period-metric .label {
+                text-transform: none; font-size: 13px; letter-spacing: 0;
+            }
+
+            /* Prism: layered glass with subtle refractions, not a flat purple coat. */
+            html[data-theme="prism"] body {
+                background: radial-gradient(ellipse at 0% -4%, #783db74a, transparent 52%),
+                    radial-gradient(ellipse at 100% 18%, #3997ba3d, transparent 42%),
+                    linear-gradient(145deg, #11102c, #191239 66%, #0c1935);
+            }
+            html[data-theme="prism"] .hero {
+                background: linear-gradient(128deg, #684497b8, #2c2d65ad 52%, #193956a8);
+                border-color: #9772bcaa; backdrop-filter: blur(14px);
+                box-shadow: 0 18px 48px #04051545, inset 0 1px 0 #ffffff34;
+            }
+            html[data-theme="prism"] .hero:after {
+                content: "◇"; font-size: 200px; right: 4%; top: -26px; color: #dbbaff15;
+            }
+            html[data-theme="prism"] .metric, html[data-theme="prism"] .period-metric,
+            html[data-theme="prism"] .panel {
+                background: linear-gradient(145deg, #332953b3, #192548bd);
+                border-color: #8268af78; backdrop-filter: blur(16px);
+                box-shadow: 0 12px 32px #060a2344, inset 0 1px 0 #ffffff1b;
+            }
+            html[data-theme="prism"] .metric .num {
+                text-shadow: 0 0 22px #c1b0ee36;
+            }
+            html[data-theme="prism"] .chart-fill {
+                background: linear-gradient(0deg, #835db4, #eac1ff);
+                box-shadow: 0 0 11px #cd9aff55;
+            }
+            html[data-theme="prism"] .chart-fill-party {
+                background: linear-gradient(0deg, #327c9e, #9deeff);
+                box-shadow: 0 0 11px #83d9fc4a;
+            }
+            html[data-theme="prism"] .segment button.active { box-shadow: 0 0 14px #b09bff30; }
+
+            /* Ember: compact heated metal, glowing top edge and crisp bars. */
+            html[data-theme="ember"] body {
+                background: radial-gradient(ellipse at 86% -4%, #c44c2325, transparent 42%),
+                    radial-gradient(ellipse at 4% 90%, #ff73250e, transparent 48%), var(--page);
+            }
+            html[data-theme="ember"] .hero {
+                background: radial-gradient(ellipse at 86% 10%, #ff903023, transparent 35%),
+                    linear-gradient(115deg, #5c2516, #2d1c17 62%, #171210);
+                box-shadow: 0 16px 36px #05040366, inset 0 2px 0 #fb954f45;
+            }
+            html[data-theme="ember"] .hero:after {
+                content: "✶"; font-family: Georgia, serif; font-size: 180px;
+                right: 8%; top: -28px; color: #ff953014;
+            }
+            html[data-theme="ember"] .metric, html[data-theme="ember"] .period-metric,
+            html[data-theme="ember"] .panel {
+                background: linear-gradient(170deg, #2b1b14, var(--surface) 65%);
+                border-top: 2px solid #9e4c28;
+            }
+            html[data-theme="ember"] .metric .num { color: #ffd0a0; }
+            html[data-theme="ember"] .chart-fill {
+                border-radius: 2px 2px 0 0; box-shadow: 0 0 8px #e9542661;
+            }
+            html[data-theme="ember"] .chart-fill-party { box-shadow: 0 0 6px #ffdcac42; }
+            html[data-theme="ember"] .segment button.active { box-shadow: inset 0 -2px 0 #ffd19d; }
+
+            /* Blueprint: blueprint-paper grid, drafting borders and monospace readouts. */
+            html[data-theme="blueprint"] body {
+                background: linear-gradient(#b4e3ff09 1px, transparent 1px),
+                    linear-gradient(90deg, #b4e3ff09 1px, transparent 1px),
+                    linear-gradient(#b4e3ff13 1px, transparent 1px),
+                    linear-gradient(90deg, #b4e3ff13 1px, transparent 1px), var(--page);
+                background-size: 18px 18px, 18px 18px, 90px 90px, 90px 90px, auto;
+            }
+            html[data-theme="blueprint"] .hero, html[data-theme="blueprint"] .panel,
+            html[data-theme="blueprint"] .metric, html[data-theme="blueprint"] .period-metric {
+                border-style: dashed; box-shadow: inset 0 0 0 1px #a1e4ff14;
+            }
+            html[data-theme="blueprint"] .hero {
+                background: linear-gradient(115deg, #165474f2, #0d3756ee 65%, #0a2e4cee);
+            }
+            html[data-theme="blueprint"] .hero:after {
+                content: "◎"; font-size: 150px; right: 6%; top: -4px; color: #9fe4f917;
+            }
+            html[data-theme="blueprint"] h2, html[data-theme="blueprint"] th,
+            html[data-theme="blueprint"] .metric .label,
+            html[data-theme="blueprint"] .period-metric .label {
+                font-family: Consolas, "Courier New", monospace; letter-spacing: .6px;
+            }
+            html[data-theme="blueprint"] .total, html[data-theme="blueprint"] .squad-total,
+            html[data-theme="blueprint"] .metric .num {
+                font-family: Consolas, "Courier New", monospace; font-variant-numeric: tabular-nums;
+            }
+            html[data-theme="blueprint"] .chart-fill, html[data-theme="blueprint"] .chart-bar {
+                border-radius: 0;
+            }
+            html[data-theme="blueprint"] .button, html[data-theme="blueprint"] .control,
+            html[data-theme="blueprint"] .theme-select, html[data-theme="blueprint"] .segment,
+            html[data-theme="blueprint"] .segment button {
+                border-radius: 2px;
+            }
+            html[data-theme="blueprint"] .segment button.active {
+                box-shadow: inset 0 0 0 1px #c6f8ff7d;
+            }
             /* Structural differences are deliberate; these are not just palette swaps. */
             html[data-theme="carbon"] body { background: var(--page); }
-            html[data-theme="carbon"] .hero:after { content: "////"; font: 900 92px/1 "Segoe UI", sans-serif;
-                letter-spacing: -12px; top: 10px; right: 8%; }
+            html[data-theme="carbon"] .hero:after { content: none; }
+            html[data-theme="carbon"] .hero-squad { position: relative; isolation: isolate; }
+            html[data-theme="carbon"] .hero-squad::after {
+                content: "////"; position: absolute; left: 50%; top: 50%;
+                transform: translate(-50%, -50%); text-align: center; width: 100%;
+                font: 900 86px/1 "Segoe UI", sans-serif; letter-spacing: -11px;
+                color: #ffffff0c; pointer-events: none; z-index: -1;
+            }
             html[data-theme="carbon"] h1 { letter-spacing: -1.3px; font-weight: 900; }
             html[data-theme="carbon"] .metric .num { font-variant-numeric: tabular-nums; }
             html[data-theme="carbon"] .chart-fill { border-radius: 0; }
@@ -373,7 +605,10 @@ public static class Dashboard
             html[data-theme="solar"] .hero {
                 background: radial-gradient(circle at 86% 22%, #ffc26a20 0, transparent 31%),
                   linear-gradient(120deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c)); }
-            html[data-theme="solar"] .hero:after { content: "☼"; top: -25px; right: 6%; font-size: 210px; }
+            html[data-theme="solar"] .hero:after {
+                content: "☼"; top: 50%; right: 7%; transform: translateY(-50%);
+                font-size: 98px;
+            }
             html[data-theme="solar"] .metric, html[data-theme="solar"] .period-metric {
                 background: linear-gradient(145deg, #3f2830, var(--surface) 80%); }
             html[data-theme="solar"] .total { text-shadow: 0 7px 24px #17101855; }
@@ -400,6 +635,7 @@ public static class Dashboard
                     <option value="studio">Studio Light</option><option value="prism">Prism</option>
                     <option value="carbon">Carbon</option><option value="arcade">Neon Arcade</option>
                     <option value="glacier">Glacier</option><option value="solar">Solar Flare</option>
+                    <option value="ember">Ember</option><option value="blueprint">Blueprint</option>
                   </select></div>
             </header>
             <section class="hero">
