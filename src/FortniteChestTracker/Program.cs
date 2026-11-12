@@ -47,7 +47,11 @@ public static class Program
 
         try
         {
-            if (cli) Console.OutputEncoding = Encoding.UTF8;
+            if (cli)
+            {
+                try { Console.OutputEncoding = Encoding.UTF8; }
+                catch (IOException) { /* WinExe started without an attached terminal. */ }
+            }
             Console.WriteLine("FORTNITE CHESTTRACKER - Solo repeticiones .replay, sin tocar Fortnite");
             Console.WriteLine($"Repeticiones: {demos}");
             Console.WriteLine($"Datos locales: {data}");
