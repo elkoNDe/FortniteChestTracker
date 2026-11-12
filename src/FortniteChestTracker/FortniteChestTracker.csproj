@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>FortniteChestTracker</AssemblyName>
     <RootNamespace>FortniteChestTracker</RootNamespace>
-    <Version>0.3.5</Version>
+    <Version>0.3.6</Version>
     <ApplicationIcon>Assets/AppIcon.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <!-- A standalone EXE must also contain SQLite's native e_sqlite3.dll. -->
