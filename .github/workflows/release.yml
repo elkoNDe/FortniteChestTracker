@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.7: publish eight themes and remove Tactical HUD's left accent.
+# v0.3.8: redesign the original four, add Ember/Blueprint, refine Carbon and Solar.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -83,9 +83,10 @@ jobs:
 
           - Contador local de cofres a partir de repeticiones Fortnite.
           - Estadísticas personales, equipo, historial y panel HTML.
-          - Ocho estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
-            Carbon, Neon Arcade, Glacier y Solar Flare.
-          - Tactical HUD sin la franja verde lateral.
+          - Diez estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
+            Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint.
+          - Rediseño visual de Arena, Tactical HUD, Studio Light y Prism.
+          - El sol de Solar Flare es más pequeño; el adorno de Carbon se centra en la zona Party.
           - Tema recordado en el navegador e icono original del EXE en la cabecera.
           - Cabecera simplificada sin el aviso de actualización.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
