@@ -113,3 +113,19 @@ test('leyenda de series: ambas, solo tú, solo party y ninguna', () => {
   assert.equal(Math.max(1, ...visibleChartSeries(match, false, true).map(x => x.value)), 13);
   assert.equal(Math.max(1, ...visibleChartSeries(match, true, false).map(x => x.value)), 6);
 });
+
+test('selector visual: cuatro temas, persistencia y icono del EXE', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  const client = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Assets/dashboard.js'), 'utf8');
+  for (const theme of ['arena', 'tactical', 'studio', 'prism']) {
+    assert.match(dashboard, new RegExp('<option value="' + theme + '">'));
+    assert.ok(client.includes('"' + theme + '"'), 'Tema no disponible: ' + theme);
+  }
+  assert.match(dashboard, /id="theme-select"/);
+  assert.match(dashboard, /<img src="\{\{iconDataUrl\}\}"/);
+  assert.doesNotMatch(dashboard, /Datos locales · Actualización cada 20 s/);
+  assert.match(client, /localStorage\.setItem\(THEME_KEY, theme\)/);
+  assert.match(client, /document\.documentElement\.dataset\.theme = theme/);
+});
