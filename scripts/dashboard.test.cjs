@@ -342,3 +342,13 @@ test('La tarjeta del ticket usa los rótulos compactos solicitados', () => {
   assert.doesNotMatch(dashboard, /La party es aproximada:|Calendario offline; las franjas futuras son previsiones\.|Party observada:|Próxima franja:|sin confirmar/);
   assert.match(dashboard, /Cada cofre es independiente: no existe progreso garantizado/);
 });
+
+test('El resumen de cofres de party muestra solo Total', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname,
+    '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  assert.match(dashboard, /<p class="squad-note">Total<\/p>/);
+  assert.doesNotMatch(dashboard,
+    /Total observado\. Puede faltar actividad de compañeros no identificados/);
+});

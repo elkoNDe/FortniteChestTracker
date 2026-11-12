@@ -758,7 +758,7 @@ public static class Dashboard
         sb.Append(data.SquadChests.ToString("N0", CultureInfo.GetCultureInfo("es-ES")));
         sb.Append("""
                   </div>
-                  <p class="squad-note">Total observado. Puede faltar actividad de compañeros no identificados o de partidas antiguas sin desglose.</p>
+                  <p class="squad-note">Total</p>
                 </div>
               </div>
               <div class="hint">Tu histórico se conserva en SQLite.</div>
