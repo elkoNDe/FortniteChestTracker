@@ -1,17 +1,19 @@
 # Fortnite ChestTracker
 
 [![Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml/badge.svg)](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml)
-![Version](https://img.shields.io/badge/version-0.3.10-blue)
+![Version](https://img.shields.io/badge/version-0.4.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
-> **Estado: v0.3.10.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
+> **Estado: v0.4.0.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
 
 ## Qué hace
 
+- **Aplicación en segundo plano:** arranca sin consola y muestra el icono del tracker junto al reloj de Windows. Doble clic para abrir el dashboard, menú contextual para ver el estado, abrir datos/errores y salir. Cerrar el navegador **no** detiene la vigilancia.
+- **Estado real del monitor:** el dashboard indica si está activo, analizando, esperando una repetición, en error o desconectado; muestra la última comprobación, pendientes y la última importación de esta sesión. Se actualiza localmente y detecta un proceso detenido por antigüedad de la última señal (45 s). No necesita servidor ni conexión a Internet.
 - **Estadísticas por periodos:** Hoy, Esta semana, Este mes, gráfica diaria/mensual y filtros del historial muestran tanto tus cofres como los observados de la party (incluidos los tuyos). Puedes pulsar «Tú» o «Party» en la leyenda para ocultar o mostrar sus barras; la elección se conserva al actualizar el panel.
 - **Aspecto personalizable:** diez estilos (Arena, Tactical HUD, Studio Light, Prism, Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint), selector directo en el panel y preferencia guardada en el navegador. Arena, Tactical HUD, Studio Light y Prism ahora tienen tratamientos visuales propios. Los adornos de los diez temas comparten escala y alineación; Carbon mantiene su adorno centrado en Party. Arena utiliza dos franjas diagonales discretas, Tactical HUD una retícula de esquinas y Studio Light un doble aro fino; se conserva la posición común de todos los adornos. Studio Light tiene contraste corregido y Arena no tiene el recorte diagonal del panel principal. El título utiliza el mismo icono que el ejecutable.
 - **Tus cofres:** aperturas, destruidos, récord, media, estadísticas diarias y mensuales.
@@ -40,7 +42,7 @@ Los demás modos quedan fuera de las estadísticas, las gráficas, el historial 
 
 1. Activa en Fortnite **Ajustes → Juego → Repeticiones → Grabar repeticiones**.
 2. Descarga **[FortniteChestTracker.exe](https://github.com/elkoNDe/FortniteChestTracker/releases/latest/download/FortniteChestTracker.exe)** desde la [última release](https://github.com/elkoNDe/FortniteChestTracker/releases/latest): un único archivo, sin ZIP y sin instalar .NET.
-3. Ejecuta `FortniteChestTracker.exe`. Se abrirá el panel en el navegador. Mantén la aplicación abierta mientras juegas para importar nuevas partidas.
+3. Ejecuta `FortniteChestTracker.exe`. Se abrirá el panel en el navegador y aparecerá un icono junto al reloj de Windows. El contador permanece activo aunque cierres la pestaña del navegador. Para abrir el panel de nuevo, haz doble clic en el icono; para detenerlo, usa **Salir de FortniteChestTracker** en su menú.
 
 Si prefieres inspeccionar las dependencias por separado, en [GitHub Actions](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml) se sigue generando la distribución `FortniteChestTracker-win-x64-portable` con hashes SHA-256.
 
@@ -59,13 +61,15 @@ Desde PowerShell, en la carpeta del ejecutable:
 .\FortniteChestTracker.exe --demos "D:\Replays" # Otra carpeta de repeticiones
 .\FortniteChestTracker.exe --self-test         # Pruebas internas
 .\FortniteChestTracker.exe --backfill-squad    # Recuperar equipo/posición de replays antiguos
+.\FortniteChestTracker.exe --console           # Modo terminal de diagnóstico (sin bandeja)
+.\FortniteChestTracker.exe --headless          # Modo sin interfaz para automatización
 ```
 
 `--backfill-squad` es opcional: ejecútalo con el monitor cerrado y preferiblemente sin jugar. Solo recupera información si los archivos originales todavía existen; no duplica tus partidas.
 
 ### Si no aparecen partidas nuevas
 
-Comprueba que Fortnite esté guardando repeticiones y que la consola muestre «Monitor activo». El recuento **no ocurre durante la partida**: comienza cuando el replay se puede leer correctamente. El panel se recarga cada 20 segundos.
+Comprueba que Fortnite esté guardando repeticiones y que la consola muestre «Monitor activo». El recuento **no ocurre durante la partida**: comienza cuando el replay se puede leer correctamente. El panel se recarga cada 20 segundos y el monitor actualiza su estado aproximadamente cada 15 segundos. Si el programa está detenido o no responde, el panel dejará de indicar «Monitor activo».
 
 Los errores se guardan en `%LOCALAPPDATA%\FortniteChestTracker\errors.log` y los errores de arranque en `startup-errors.log`, en la misma carpeta.
 
