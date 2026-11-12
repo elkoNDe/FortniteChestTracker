@@ -114,12 +114,12 @@ test('leyenda de series: ambas, solo tú, solo party y ninguna', () => {
   assert.equal(Math.max(1, ...visibleChartSeries(match, true, false).map(x => x.value)), 6);
 });
 
-test('selector visual: ocho temas, persistencia y icono del EXE', () => {
+test('selector visual: diez temas, persistencia y icono del EXE', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
   const client = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Assets/dashboard.js'), 'utf8');
-  for (const theme of ['arena', 'tactical', 'studio', 'prism', 'carbon', 'arcade', 'glacier', 'solar']) {
+  for (const theme of ['arena', 'tactical', 'studio', 'prism', 'carbon', 'arcade', 'glacier', 'solar', 'ember', 'blueprint']) {
     assert.match(dashboard, new RegExp('<option value="' + theme + '">'));
     assert.ok(client.includes('"' + theme + '"'), 'Tema no disponible: ' + theme);
   }
@@ -144,4 +144,44 @@ test('los cuatro estilos nuevos tienen paleta propia y Tactical HUD no tiene bar
   assert.doesNotMatch(dashboard, /inset 3px 0 0 #b8f47f18/);
   // The original single-file favicon and header branding must remain intact.
   assert.match(dashboard, /<link rel="icon" type="image\/x-icon" href="\{\{iconDataUrl\}\}">/);
+});
+
+test('los primeros cuatro temas tienen una identidad visual estructural', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  for (const theme of ['arena', 'tactical', 'studio', 'prism']) {
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] body {'),
+      'No se personaliza el fondo de ' + theme);
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] .hero {'),
+      'No se personaliza el hero de ' + theme);
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] .chart-fill'),
+      'No se personaliza la grafica de ' + theme);
+  }
+  assert.match(dashboard, /html\[data-theme="studio"\] h2 \{[\s\S]*?font-family: Georgia/);
+  assert.match(dashboard, /html\[data-theme="prism"\] \.hero \{[\s\S]*?backdrop-filter: blur/);
+  assert.match(dashboard, /html\[data-theme="tactical"\] \.metric \.num[\s\S]*?font-family: Consolas/);
+});
+
+test('Ember y Blueprint tienen paletas y controles especificos', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  for (const theme of ['ember', 'blueprint']) {
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] {'));
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] .hero {'));
+    assert.ok(dashboard.includes('html[data-theme="' + theme + '"] .chart-fill'));
+  }
+});
+
+test('Carbon centra su adorno en Party y Solar Flare reduce el sol', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  assert.match(dashboard, /html\[data-theme="carbon"\] \.hero:after \{ content: none; \}/);
+  assert.match(dashboard,
+    /html\[data-theme="carbon"\] \.hero-squad::after \{[\s\S]*?left: 50%; top: 50%;[\s\S]*?transform: translate\(-50%, -50%\)/);
+  assert.match(dashboard,
+    /html\[data-theme="solar"\] \.hero:after \{[\s\S]*?font-size: 98px;/);
+  assert.doesNotMatch(dashboard, /html\[data-theme="solar"\] \.hero:after \{[^}]*font-size: 210px/);
 });
