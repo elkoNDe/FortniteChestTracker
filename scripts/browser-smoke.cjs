@@ -62,6 +62,14 @@ try {
     "No se presentan los intentos con bono del Tesoro.");
   assert.match(html, /id="ticket-party-chance">[0-9]+,[0-9]{4} %</,
     "Falta la probabilidad estimada de la party.");
+  assert.match(html, /Party: <strong id="ticket-party-chance">/,
+    "La tarjeta del ticket debe mostrar Party sin el antiguo calificativo.");
+  assert.match(html, /id="ticket-next-hour">Próxima Treasure Hour:/,
+    "La próxima franja debe aparecer como Próxima Treasure Hour.");
+  assert.match(html, /\(prevista\)/,
+    "El evento siguiente debe etiquetarse simplemente como previsto.");
+  assert.doesNotMatch(html, /La party es aproximada:|Calendario offline; las franjas futuras son previsiones\.|Próxima franja:|sin confirmar/,
+    "El HTML sigue mostrando avisos que el usuario ha pedido quitar.");
   assert.match(html, /id="ticket-next-hour">/,
     "No se indica el próximo horario del Tesoro.");
   assert.match(html, /Cada cofre es independiente: no existe progreso garantizado/,
