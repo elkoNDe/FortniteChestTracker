@@ -789,14 +789,14 @@ public static class Dashboard
               (ticket.CurrentMultiplierProvisional ? " (prevista)" : "")
             : "";
         var nextWindow = ticket.NextHourUtc is DateTimeOffset starts
-            ? "Próxima franja: " + starts.ToLocalTime().ToString("ddd dd/MM HH:mm", es) +
+            ? "Próxima Treasure Hour: " + starts.ToLocalTime().ToString("ddd dd/MM HH:mm", es) +
               "–" + starts.AddHours(2).ToLocalTime().ToString("HH:mm", es) +
               " · ×" + ticket.NextHourMultiplier.ToString("0.#", es) +
-              (ticket.NextHourConfirmed ? " (confirmada)" : " (prevista, sin confirmar)")
+              (ticket.NextHourConfirmed ? " (confirmada)" : " (prevista)")
             : "Sin más Horas del Tesoro previstas en este calendario";
         var provisionalNote = ticket.ProvisionalOwnChests > 0
             ? " · " + ticket.ProvisionalOwnChests.ToString("N0", es) +
-              " cofres en franjas no confirmadas"
+              " cofres en franjas previstas"
             : "";
         var approximatedNote = ticket.ApproximateOwnChests > 0
             ? " · " + ticket.ApproximateOwnChests.ToString("N0", es) +
@@ -815,13 +815,10 @@ public static class Dashboard
               </div>
               <div class="ticket-details">
                 <div class="ticket-small">Siguiente cofre: <strong id="ticket-next-rate">1 entre {nextRate}</strong>{nowBoost}</div>
-                <div class="ticket-small">Party observada: <strong id="ticket-party-chance">{partyChance} %</strong>
+                <div class="ticket-small">Party: <strong id="ticket-party-chance">{partyChance} %</strong>
                   · {partyChests} cofres, contando los tuyos</div>
-                <div class="ticket-note">La party es aproximada: no hay hora exacta por compañero y
-                  pueden faltar aperturas no atribuibles.</div>
                 <div class="ticket-small" id="ticket-next-hour">{nextWindow}</div>
-                <div class="ticket-note">Calendario offline; las franjas futuras son previsiones.
-                  Cada cofre es independiente: no existe progreso garantizado{provisionalNote}{approximatedNote}.</div>
+                <div class="ticket-note">Cada cofre es independiente: no existe progreso garantizado{provisionalNote}{approximatedNote}.</div>
               </div>
             </section>
             """);
