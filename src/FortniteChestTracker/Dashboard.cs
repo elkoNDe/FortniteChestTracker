@@ -373,8 +373,16 @@ public static class Dashboard
                     linear-gradient(108deg, #2d4fa1, #192c64 57%, #101c38);
                 box-shadow: inset 0 2px 0 #a8c5ff44, 0 10px 28px #0e173514;
             }
+            /* Arena: two restrained stadium slashes, not a floating star. */
             html[data-theme="arena"] .hero::after {
-                content: "✦"; font-size: 126px;
+                content: "";
+                background: linear-gradient(112deg,
+                    transparent 0 31%, var(--hero-ornament) 31% 40%,
+                    transparent 40% 50%, var(--hero-ornament) 50% 59%,
+                    transparent 59%);
+                background-size: 140px 100px;
+                background-position: center;
+                background-repeat: no-repeat;
             }
             html[data-theme="arena"] .total { font-style: italic; letter-spacing: -4px; }
             html[data-theme="arena"] .metric, html[data-theme="arena"] .period-metric {
@@ -402,8 +410,18 @@ public static class Dashboard
                     linear-gradient(110deg, #173d34, #102c29 65%, #0a2321);
                 box-shadow: inset 0 1px 0 #b2f5be35, inset 0 -1px 0 #b2f5be20;
             }
+            /* Tactical HUD: eight precision corner strokes, no central glyph. */
             html[data-theme="tactical"] .hero::after {
-                content: "⌖"; font-family: Consolas, monospace; font-size: 124px;
+                content: "";
+                background:
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) left 12px top 12px / 32px 2px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) left 12px top 12px / 2px 32px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) right 12px top 12px / 32px 2px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) right 12px top 12px / 2px 32px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) left 12px bottom 12px / 32px 2px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) left 12px bottom 12px / 2px 32px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) right 12px bottom 12px / 32px 2px no-repeat,
+                    linear-gradient(var(--hero-ornament), var(--hero-ornament)) right 12px bottom 12px / 2px 32px no-repeat;
             }
             html[data-theme="tactical"] .metric, html[data-theme="tactical"] .period-metric,
             html[data-theme="tactical"] .panel {
@@ -438,8 +456,14 @@ public static class Dashboard
                 background: linear-gradient(110deg, #fff7ed 0%, #fffdfa 72%, #f6ebdb);
                 border: 1px solid #e9d8c4; padding-top: 38px; padding-bottom: 38px;
             }
+            /* Studio Light: delicate concentric rules, like an editorial seal. */
             html[data-theme="studio"] .hero::after {
-                content: "○"; font-family: Georgia, serif; font-size: 128px;
+                content: "";
+                border-radius: 50%;
+                background: radial-gradient(circle at center,
+                    transparent 0 44px, var(--hero-ornament) 45px 46px,
+                    transparent 47px 55px, #ca9a5a10 56px 57px,
+                    transparent 58px);
             }
             html[data-theme="studio"] h2 {
                 font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500;
