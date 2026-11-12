@@ -197,8 +197,7 @@ test('adornos: posición, escala y capa común para todos los diseños', () => {
   assert.match(base[0], /align-items: center; justify-content: center; text-align: center/);
   assert.match(base[0], /pointer-events: none; z-index: 0/);
 
-  const motifs = ['arena', 'tactical', 'studio', 'prism', 'arcade',
-    'glacier', 'solar', 'ember', 'blueprint'];
+  const motifs = ['prism', 'arcade', 'glacier', 'solar', 'ember', 'blueprint'];
   for (const theme of motifs) {
     const selector = 'html[data-theme="' + theme + '"] .hero::after {';
     const start = dashboard.indexOf(selector);
@@ -230,4 +229,33 @@ test('Arena tiene esquinas normales y Studio Light usa contraste legible', () =>
   assert.match(dashboard, /html\[data-theme="studio"\] h1 span \{ color: #b85a36; \}/);
   assert.match(dashboard, /html\[data-theme="studio"\] \.metric \.num,[\s\S]*?html\[data-theme="studio"\] \.chart-value \{ color: #243047; \}/);
   assert.match(dashboard, /html\[data-theme="studio"\], html\[data-theme="glacier"\] \{\s*color: var\(--text\)/);
+});
+
+test('Arena, Tactical HUD y Studio Light usan geometria CSS discreta sin glifos', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  for (const theme of ['arena', 'tactical', 'studio']) {
+    const selector = 'html[data-theme="' + theme + '"] .hero::after {';
+    const start = dashboard.indexOf(selector);
+    assert.ok(start >= 0, 'Falta el adorno de ' + theme);
+    const end = dashboard.indexOf('}', start);
+    const style = dashboard.slice(start + selector.length, end);
+    assert.match(style, /content:\s*"";/, 'El adorno debe ser una forma CSS, no un caracter');
+    assert.doesNotMatch(style, /\b(?:top|right|left|bottom|transform|width|height)\s*:/,
+      'El tema no debe sobrescribir el marco comun');
+    assert.match(style, /background:/, 'Falta el motivo grafico de ' + theme);
+  }
+  const arena = dashboard.slice(dashboard.indexOf('html[data-theme="arena"] .hero::after {'),
+    dashboard.indexOf('}', dashboard.indexOf('html[data-theme="arena"] .hero::after {')));
+  assert.match(arena, /linear-gradient\(112deg/);
+  assert.match(arena, /background-size: 140px 100px/);
+  const tactical = dashboard.slice(dashboard.indexOf('html[data-theme="tactical"] .hero::after {'),
+    dashboard.indexOf('}', dashboard.indexOf('html[data-theme="tactical"] .hero::after {')));
+  assert.equal((tactical.match(/linear-gradient\(/g) || []).length, 8);
+  const studio = dashboard.slice(dashboard.indexOf('html[data-theme="studio"] .hero::after {'),
+    dashboard.indexOf('}', dashboard.indexOf('html[data-theme="studio"] .hero::after {')));
+  assert.match(studio, /border-radius: 50%/);
+  assert.match(studio, /radial-gradient\(circle at center/);
+  assert.match(studio, /transparent 0 44px, var\(--hero-ornament\) 45px 46px/);
 });
