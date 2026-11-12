@@ -816,7 +816,7 @@ public static class Dashboard
               <div class="ticket-details">
                 <div class="ticket-small">Siguiente cofre: <strong id="ticket-next-rate">1 entre {nextRate}</strong>{nowBoost}</div>
                 <div class="ticket-small">Party: <strong id="ticket-party-chance">{partyChance} %</strong>
-                  · {partyChests} cofres, contando los tuyos</div>
+                  · {partyChests} cofres, contando los tuyos.</div>
                 <div class="ticket-small" id="ticket-next-hour">{nextWindow}</div>
                 <div class="ticket-note">Cada cofre es independiente: no existe progreso garantizado{provisionalNote}{approximatedNote}.</div>
               </div>
