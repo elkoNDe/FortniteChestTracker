@@ -181,6 +181,109 @@ public static class Dashboard
             .pagination { justify-content: flex-end; margin-top: 17px; }
             .pagination .secondary { margin: 0; }
             .footer { color: #7789a5; font-size: 12px; text-align: center; margin-top: 30px; }
+
+            /* Themes share the same layout and data. Only presentation changes. */
+            :root {
+                --page: #090e1c; --glow: #26346970; --text: #f5f6ff; --muted: #99a8c3;
+                --surface: #111b30; --line: #283854; --accent: #ffda7b; --team: #b0d8ff;
+                --hero-a: #283b81; --hero-b: #18254a; --hero-c: #141f39; --hero-line: #435a9b;
+                --hero-note: #b1c5e4; --hero-label: #d2d8fa; --hero-ornament: #ffffff0a;
+                --control-bg: #101a2e; --control-border: #3c4d68; --control-text: #dce6f9;
+                --button-bg: #1d3053; --button-border: #364e79; --selected: #355298;
+                --hover: #29426d; --chart-hover: #223a62; --owner-bottom: #a87924;
+                --owner-top: #f6d889; --team-bottom: #3463a5; --team-top: #b0d8ff;
+                --row-alt: #142039; --table-rule: #22304a; --radius: 18px; --hero-radius: 23px;
+            }
+            html[data-theme="tactical"] {
+                --page: #091313; --glow: #1a4b3b66; --text: #effff6; --muted: #92b5ad;
+                --surface: #112320; --line: #2b5148; --accent: #b8f47f; --team: #7be4da;
+                --hero-a: #20483b; --hero-b: #17352e; --hero-c: #102821; --hero-line: #487e64;
+                --hero-note: #badad1; --hero-label: #b5eac7; --hero-ornament: #b8f47f12;
+                --control-bg: #0c211d; --control-border: #37685b; --control-text: #e7fff3;
+                --button-bg: #1b3931; --button-border: #427a66; --selected: #346e50;
+                --hover: #285846; --chart-hover: #1e463b; --owner-bottom: #4b8b38;
+                --owner-top: #b8f47f; --team-bottom: #2c8384; --team-top: #7be4da;
+                --row-alt: #18332b; --table-rule: #28443e; --radius: 9px; --hero-radius: 12px;
+            }
+            html[data-theme="studio"] {
+                color-scheme: light;
+                --page: #f6f3ed; --glow: #eccdac88; --text: #243047; --muted: #67758a;
+                --surface: #fffcf8; --line: #e3dcd3; --accent: #c75c36; --team: #477fc7;
+                --hero-a: #fff0da; --hero-b: #fff7ec; --hero-c: #fffcf6; --hero-line: #eed0ac;
+                --hero-note: #736b66; --hero-label: #81513c; --hero-ornament: #ca9a5a16;
+                --control-bg: #fffefa; --control-border: #d6cfc7; --control-text: #243047;
+                --button-bg: #f9eee2; --button-border: #dbcbb8; --selected: #d76c45;
+                --hover: #f1e3d5; --chart-hover: #f7e9d7; --owner-bottom: #b9492e;
+                --owner-top: #e8a078; --team-bottom: #507ab4; --team-top: #93b9e5;
+                --row-alt: #f8f1e8; --table-rule: #eae2d8; --radius: 16px; --hero-radius: 20px;
+            }
+            html[data-theme="prism"] {
+                --page: #101027; --glow: #58368f66; --text: #f8f3ff; --muted: #b0a6ca;
+                --surface: #1d1b3b; --line: #423b66; --accent: #d4afff; --team: #88dcf3;
+                --hero-a: #50377c; --hero-b: #302552; --hero-c: #1c204b; --hero-line: #775ca6;
+                --hero-note: #d4c6ee; --hero-label: #e3d2ff; --hero-ornament: #e0c9ff12;
+                --control-bg: #211d3e; --control-border: #5c527d; --control-text: #f0e7ff;
+                --button-bg: #353057; --button-border: #65588b; --selected: #674ba1;
+                --hover: #49416d; --chart-hover: #38315d; --owner-bottom: #7f56a9;
+                --owner-top: #d4afff; --team-bottom: #347ca0; --team-top: #88dcf3;
+                --row-alt: #272346; --table-rule: #383457; --radius: 20px; --hero-radius: 26px;
+            }
+            html { background: var(--page); color: var(--text); }
+            body { background: radial-gradient(ellipse at 12% -8%, var(--glow) 0%, transparent 47%), var(--page); }
+            .subtitle, .secondary, .period-summary, .metric .label, .period-metric .label,
+            .metric .small, .period-metric .small, th, .muted, .unobserved, .empty,
+            .footer, .chart-label, .chart-bar, .date-cell .date-end { color: var(--muted); }
+            h1 span, .total, .period-metric .num, .period-summary strong, .chart-value,
+            .emphasis, .squad-owner td.player-cell, .legend-toggle.owner span { color: var(--accent); }
+            .hero { background: linear-gradient(110deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));
+                border-color: var(--hero-line); border-radius: var(--hero-radius); }
+            .hero:after { color: var(--hero-ornament); }
+            .hero-squad { border-color: var(--hero-line); }
+            .eyebrow { color: var(--hero-label); }
+            .squad-total, .period-metric .party-count strong { color: var(--team); }
+            .squad-note, .hint, .total span { color: var(--hero-note); }
+            .metric, .panel, .period-metric { background: var(--surface);
+                border-color: var(--line); border-radius: var(--radius); }
+            .period-metric .party-count { border-color: var(--line); color: var(--muted); }
+            .control, .theme-select { background: var(--control-bg); color: var(--control-text);
+                border-color: var(--control-border); }
+            .control:focus-visible, button:focus-visible, .theme-select:focus-visible {
+                outline-color: var(--accent); }
+            .segment { background: var(--control-bg); border-color: var(--control-border); }
+            .segment button, .button { color: var(--text); }
+            .segment button.active { background: var(--selected); color: #fff; }
+            .button { background: var(--button-bg); border-color: var(--button-border); }
+            .button:hover:not(:disabled), .segment button:hover:not(.active) {
+                background: var(--hover); color: var(--text); }
+            .chart { border-color: var(--line); }
+            .chart-bar:hover, .chart-bar.selected { background: var(--chart-hover); border-color: var(--control-border); }
+            .chart-fill { background: linear-gradient(0deg, var(--owner-bottom), var(--owner-top)); }
+            .chart-fill-party { background: linear-gradient(0deg, var(--team-bottom), var(--team-top)); }
+            .legend-toggle { background: var(--button-bg); color: var(--text); border-color: var(--button-border); }
+            .legend-toggle.owner span { color: var(--accent); }
+            .legend-toggle.party span { color: var(--team); }
+            .legend-toggle:hover { background: var(--hover); }
+            th { border-color: var(--line); }
+            td { color: var(--text); border-color: var(--table-rule); }
+            .squad-mate td { background: var(--row-alt); }
+            .squad-owner td.player-cell::after { color: var(--team); }
+            .group-start td { border-color: var(--line); }
+            .date-cell .date-start { color: var(--text); }
+            .theme-picker { display: flex; align-items: center; gap: 10px; }
+            .theme-picker label { color: var(--muted); font-size: 13px; }
+            .theme-select { border: 1px solid var(--control-border); border-radius: 10px;
+                padding: 10px 34px 10px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+            html[data-theme="tactical"] .metric, html[data-theme="tactical"] .period-metric,
+            html[data-theme="tactical"] .panel { box-shadow: inset 3px 0 0 #b8f47f18; }
+            html[data-theme="tactical"] .hero { border-left: 4px solid var(--accent); }
+            html[data-theme="tactical"] .total, html[data-theme="tactical"] .metric .num {
+                font-variant-numeric: tabular-nums; }
+            html[data-theme="studio"] .hero, html[data-theme="studio"] .panel,
+            html[data-theme="studio"] .metric, html[data-theme="studio"] .period-metric {
+                box-shadow: 0 9px 28px #6b543412; }
+            html[data-theme="studio"] .segment button.active { color: #fff; }
+            html[data-theme="studio"] .chart-value { color: #9f472e; }
+            html[data-theme="prism"] .hero { box-shadow: 0 18px 40px #6b3d9926; }
             [hidden] { display: none !important; }
             @media (max-width: 760px) {
                 .shell { padding: 20px 14px 50px; }
@@ -194,10 +297,14 @@ public static class Dashboard
             </style></head><body><main class="shell">
             <header class="top">
                 <div class="brand"><div class="logo"><img src="{{iconDataUrl}}" width="53" height="53" alt="" aria-hidden="true"></div><div>
-                    <h1>FORTNITE <span style="color:#f6cf79">CHESTTRACKER</span></h1>
+                    <h1>FORTNITE <span>CHESTTRACKER</span></h1>
                     <p class="subtitle">Estadísticas privadas a partir de tus repeticiones</p>
                 </div></div>
-                <div class="pill">● Datos locales · Actualización cada 20 s</div>
+                <div class="theme-picker"><label for="theme-select">Estilo</label>
+                  <select class="theme-select" id="theme-select" aria-label="Estilo visual">
+                    <option value="arena">Arena</option><option value="tactical">Tactical HUD</option>
+                    <option value="studio">Studio Light</option><option value="prism">Prism</option>
+                  </select></div>
             </header>
             <section class="hero">
               <div class="hero-grid">
