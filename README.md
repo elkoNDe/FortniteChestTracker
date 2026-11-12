@@ -1,19 +1,19 @@
 # Fortnite ChestTracker
 
 [![Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml/badge.svg)](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml)
-![Version](https://img.shields.io/badge/version-0.3.8-blue)
+![Version](https://img.shields.io/badge/version-0.3.9-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
-> **Estado: v0.3.8.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
+> **Estado: v0.3.9.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
 
 ## Qué hace
 
 - **Estadísticas por periodos:** Hoy, Esta semana, Este mes, gráfica diaria/mensual y filtros del historial muestran tanto tus cofres como los observados de la party (incluidos los tuyos). Puedes pulsar «Tú» o «Party» en la leyenda para ocultar o mostrar sus barras; la elección se conserva al actualizar el panel.
-- **Aspecto personalizable:** diez estilos (Arena, Tactical HUD, Studio Light, Prism, Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint), selector directo en el panel y preferencia guardada en el navegador. Arena, Tactical HUD, Studio Light y Prism ahora tienen tratamientos visuales propios. Solar Flare tiene un sol más discreto y el adorno de Carbon está centrado en la zona de Party. El título utiliza el mismo icono que el ejecutable.
+- **Aspecto personalizable:** diez estilos (Arena, Tactical HUD, Studio Light, Prism, Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint), selector directo en el panel y preferencia guardada en el navegador. Arena, Tactical HUD, Studio Light y Prism ahora tienen tratamientos visuales propios. Los adornos de los diez temas comparten escala y alineación; Carbon mantiene su adorno centrado en Party. Studio Light tiene contraste corregido y Arena ya no tiene el recorte diagonal del panel principal. El título utiliza el mismo icono que el ejecutable.
 - **Tus cofres:** aperturas, destruidos, récord, media, estadísticas diarias y mensuales.
 - **Cofres de party:** suma tus cofres una sola vez y añade los cofres *observados y atribuibles* al resto de tu equipo.
 - **Historial:** fecha de inicio y de fin en dos líneas de una misma columna Fecha, duración grabada, filtros por fechas y posición final cuando está disponible. Paginación de 10 en 10 (10–100 partidas por página).
