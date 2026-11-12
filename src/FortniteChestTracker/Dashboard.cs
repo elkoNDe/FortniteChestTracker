@@ -100,7 +100,7 @@ public static class Dashboard
             <title>Fortnite ChestTracker · Estadísticas</title>
             <link rel="icon" type="image/x-icon" href="{{iconDataUrl}}">
             <style>
-            :root { color-scheme: dark; font-family: Inter, Segoe UI, Arial, sans-serif; background: #090e1c; color: #f5f6ff; }
+            :root { color-scheme: dark; font-family: Inter, Segoe UI, Arial, sans-serif; background: var(--page, #090e1c); color: var(--text, #f5f6ff); }
             * { box-sizing: border-box; }
             body { margin: 0; background: radial-gradient(ellipse at 12% -8%, #26346970 0%, transparent 45%), #090e1c; min-height: 100vh; }
             .shell { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -118,7 +118,17 @@ public static class Dashboard
             .hero-squad { flex: 0 1 290px; border-left: 1px solid #6074ab77; padding: 15px 0 15px 27px; }
             .squad-total { font-size: 44px; font-weight: 750; letter-spacing: -1px; line-height: 1.12; color: #cde0ff; }
             .squad-note { color: #b1c5e4; font-size: 12px; margin: 9px 0 0; max-width: 280px; line-height: 1.5; }
-            .hero:after { content: '✦'; position: absolute; right: 6%; top: -45px; font-size: 220px; color: #ffffff0a; pointer-events: none; }
+            /* One placement/size system for all ten decorative motifs.
+               The motif stays behind the numbers and never captures input. */
+            .hero::after {
+                content: "✦"; position: absolute;
+                width: 140px; height: 140px; right: 6%; top: 50%;
+                transform: translateY(-50%); display: flex;
+                align-items: center; justify-content: center; text-align: center;
+                font: 400 126px/1 "Segoe UI Symbol", "Segoe UI", sans-serif;
+                color: var(--hero-ornament, #ffffff16);
+                pointer-events: none; z-index: 0;
+            }
             .eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #d2d8fa; margin: 0 0 8px; }
             .total { font-size: 72px; letter-spacing: -3px; line-height: 1.05; font-weight: 800; color: #ffda7b; position: relative; z-index: 1; }
             .total span { font-size: 20px; color: #d8e1ff; letter-spacing: 0; font-weight: 500; }
@@ -187,7 +197,7 @@ public static class Dashboard
                 --page: #090e1c; --glow: #26346970; --text: #f5f6ff; --muted: #99a8c3;
                 --surface: #111b30; --line: #283854; --accent: #ffda7b; --team: #b0d8ff;
                 --hero-a: #283b81; --hero-b: #18254a; --hero-c: #141f39; --hero-line: #435a9b;
-                --hero-note: #b1c5e4; --hero-label: #d2d8fa; --hero-ornament: #ffffff0a;
+                --hero-note: #b1c5e4; --hero-label: #d2d8fa; --hero-ornament: #ffffff16;
                 --control-bg: #101a2e; --control-border: #3c4d68; --control-text: #dce6f9;
                 --button-bg: #1d3053; --button-border: #364e79; --selected: #355298;
                 --hover: #29426d; --chart-hover: #223a62; --owner-bottom: #a87924;
@@ -198,7 +208,7 @@ public static class Dashboard
                 --page: #091313; --glow: #1a4b3b66; --text: #effff6; --muted: #92b5ad;
                 --surface: #112320; --line: #2b5148; --accent: #b8f47f; --team: #7be4da;
                 --hero-a: #20483b; --hero-b: #17352e; --hero-c: #102821; --hero-line: #487e64;
-                --hero-note: #badad1; --hero-label: #b5eac7; --hero-ornament: #b8f47f12;
+                --hero-note: #badad1; --hero-label: #b5eac7; --hero-ornament: #b8f47f18;
                 --control-bg: #0c211d; --control-border: #37685b; --control-text: #e7fff3;
                 --button-bg: #1b3931; --button-border: #427a66; --selected: #346e50;
                 --hover: #285846; --chart-hover: #1e463b; --owner-bottom: #4b8b38;
@@ -210,7 +220,7 @@ public static class Dashboard
                 --page: #f6f3ed; --glow: #eccdac88; --text: #243047; --muted: #67758a;
                 --surface: #fffcf8; --line: #e3dcd3; --accent: #c75c36; --team: #477fc7;
                 --hero-a: #fff0da; --hero-b: #fff7ec; --hero-c: #fffcf6; --hero-line: #eed0ac;
-                --hero-note: #736b66; --hero-label: #81513c; --hero-ornament: #ca9a5a16;
+                --hero-note: #736b66; --hero-label: #81513c; --hero-ornament: #ca9a5a18;
                 --control-bg: #fffefa; --control-border: #d6cfc7; --control-text: #243047;
                 --button-bg: #f9eee2; --button-border: #dbcbb8; --selected: #d76c45;
                 --hover: #f1e3d5; --chart-hover: #f7e9d7; --owner-bottom: #b9492e;
@@ -221,7 +231,7 @@ public static class Dashboard
                 --page: #101027; --glow: #58368f66; --text: #f8f3ff; --muted: #b0a6ca;
                 --surface: #1d1b3b; --line: #423b66; --accent: #d4afff; --team: #88dcf3;
                 --hero-a: #50377c; --hero-b: #302552; --hero-c: #1c204b; --hero-line: #775ca6;
-                --hero-note: #d4c6ee; --hero-label: #e3d2ff; --hero-ornament: #e0c9ff12;
+                --hero-note: #d4c6ee; --hero-label: #e3d2ff; --hero-ornament: #e0c9ff18;
                 --control-bg: #211d3e; --control-border: #5c527d; --control-text: #f0e7ff;
                 --button-bg: #353057; --button-border: #65588b; --selected: #674ba1;
                 --hover: #49416d; --chart-hover: #38315d; --owner-bottom: #7f56a9;
@@ -234,7 +244,7 @@ public static class Dashboard
                 --page: #101112; --glow: #34383c44; --text: #f0f0ec; --muted: #a9acae;
                 --surface: #1a1c1e; --line: #505358; --accent: #ff715c; --team: #d8dde0;
                 --hero-a: #2b2c2e; --hero-b: #202123; --hero-c: #171819; --hero-line: #696a6a;
-                --hero-note: #b7bdc0; --hero-label: #d8dddc; --hero-ornament: #ffffff08;
+                --hero-note: #b7bdc0; --hero-label: #d8dddc; --hero-ornament: #ffffff16;
                 --control-bg: #161819; --control-border: #676a70; --control-text: #f0f0ec;
                 --button-bg: #25282a; --button-border: #62656a; --selected: #c34d3e;
                 --hover: #373a3d; --chart-hover: #333537; --owner-bottom: #a63d30;
@@ -245,7 +255,7 @@ public static class Dashboard
                 --page: #0b0920; --glow: #782baf66; --text: #fbf5ff; --muted: #c8aedb;
                 --surface: #1b1335; --line: #614686; --accent: #ff79c7; --team: #72e5e3;
                 --hero-a: #45216b; --hero-b: #271c53; --hero-c: #14284d; --hero-line: #bb66dc;
-                --hero-note: #dcc6fa; --hero-label: #f2cbff; --hero-ornament: #e392ff12;
+                --hero-note: #dcc6fa; --hero-label: #f2cbff; --hero-ornament: #e392ff18;
                 --control-bg: #1b1438; --control-border: #78529b; --control-text: #faf3ff;
                 --button-bg: #322051; --button-border: #8554aa; --selected: #934a9b;
                 --hover: #4c3278; --chart-hover: #43275d; --owner-bottom: #ae398a;
@@ -257,7 +267,7 @@ public static class Dashboard
                 --page: #eaf4fa; --glow: #b9e0f9cc; --text: #22384d; --muted: #617e93;
                 --surface: #ffffffcf; --line: #d2e4ef; --accent: #166fbd; --team: #009aaa;
                 --hero-a: #d3edfb; --hero-b: #e6f4ff; --hero-c: #f9fdff; --hero-line: #b5d9ee;
-                --hero-note: #56768e; --hero-label: #47759b; --hero-ornament: #3f8bd012;
+                --hero-note: #56768e; --hero-label: #47759b; --hero-ornament: #3f8bd018;
                 --control-bg: #f8fcff; --control-border: #a9ccdf; --control-text: #21445b;
                 --button-bg: #ebf6fc; --button-border: #b5d7e8; --selected: #2478b9;
                 --hover: #d9edf9; --chart-hover: #d6ecfa; --owner-bottom: #337ebd;
@@ -268,7 +278,7 @@ public static class Dashboard
                 --page: #1b1417; --glow: #a7513559; --text: #fff5ea; --muted: #cfaca4;
                 --surface: #302026; --line: #64444b; --accent: #ffc26a; --team: #ff977c;
                 --hero-a: #8d3e44; --hero-b: #653242; --hero-c: #342233; --hero-line: #b56a64;
-                --hero-note: #f1c4b2; --hero-label: #ffe2bd; --hero-ornament: #ffd9a319;
+                --hero-note: #f1c4b2; --hero-label: #ffe2bd; --hero-ornament: #ffd9a318;
                 --control-bg: #281b21; --control-border: #8b5660; --control-text: #fff4e9;
                 --button-bg: #4b3036; --button-border: #8f565d; --selected: #a75453;
                 --hover: #634049; --chart-hover: #633944; --owner-bottom: #ca673f;
@@ -280,7 +290,7 @@ public static class Dashboard
                 --page: #110e0d; --glow: #a541192f; --text: #fff2e7; --muted: #c7a394;
                 --surface: #201814; --line: #5e3928; --accent: #ff8848; --team: #ffd3a5;
                 --hero-a: #562619; --hero-b: #2f1b16; --hero-c: #181210; --hero-line: #b35a30;
-                --hero-note: #e6b4a0; --hero-label: #ffbe8e; --hero-ornament: #ff74320d;
+                --hero-note: #e6b4a0; --hero-label: #ffbe8e; --hero-ornament: #ff743218;
                 --control-bg: #241813; --control-border: #76412b; --control-text: #ffeede;
                 --button-bg: #3b241c; --button-border: #854528; --selected: #ab4823;
                 --hover: #583122; --chart-hover: #4b2a1e; --owner-bottom: #c0461f;
@@ -292,7 +302,7 @@ public static class Dashboard
                 --page: #092944; --glow: #217cb04d; --text: #e7f9ff; --muted: #a0c8db;
                 --surface: #103853; --line: #47748c; --accent: #81e7fa; --team: #f9d880;
                 --hero-a: #155074; --hero-b: #0e3b5c; --hero-c: #0a2e4c; --hero-line: #7bbbd4;
-                --hero-note: #b6dbe7; --hero-label: #a9e9fd; --hero-ornament: #f1fcff10;
+                --hero-note: #b6dbe7; --hero-label: #a9e9fd; --hero-ornament: #f1fcff18;
                 --control-bg: #113852; --control-border: #79b1c9; --control-text: #e1f7ff;
                 --button-bg: #164663; --button-border: #77aac1; --selected: #216f91;
                 --hover: #205978; --chart-hover: #205473; --owner-bottom: #2aa6cc;
@@ -358,14 +368,13 @@ public static class Dashboard
                     radial-gradient(ellipse at 95% 9%, #f7c66d16, transparent 35%), var(--page);
             }
             html[data-theme="arena"] .hero {
-                border-radius: 8px; border-color: #5d73b6;
+                border-radius: 10px; border-color: #5d73b6;
                 background: radial-gradient(ellipse at 82% 0%, #d8e0ff24, transparent 44%),
                     linear-gradient(108deg, #2d4fa1, #192c64 57%, #101c38);
-                clip-path: polygon(0 0, calc(100% - 29px) 0, 100% 29px, 100% 100%, 0 100%);
-                box-shadow: inset 0 2px 0 #a8c5ff44;
+                box-shadow: inset 0 2px 0 #a8c5ff44, 0 10px 28px #0e173514;
             }
-            html[data-theme="arena"] .hero:after {
-                content: "✦"; top: -40px; right: 4%; font-size: 195px;
+            html[data-theme="arena"] .hero::after {
+                content: "✦"; font-size: 126px;
             }
             html[data-theme="arena"] .total { font-style: italic; letter-spacing: -4px; }
             html[data-theme="arena"] .metric, html[data-theme="arena"] .period-metric {
@@ -393,9 +402,8 @@ public static class Dashboard
                     linear-gradient(110deg, #173d34, #102c29 65%, #0a2321);
                 box-shadow: inset 0 1px 0 #b2f5be35, inset 0 -1px 0 #b2f5be20;
             }
-            html[data-theme="tactical"] .hero:after {
-                content: "⌖"; font-family: Consolas, monospace;
-                font-size: 176px; right: 8%; top: -26px; color: #b8f47f12;
+            html[data-theme="tactical"] .hero::after {
+                content: "⌖"; font-family: Consolas, monospace; font-size: 124px;
             }
             html[data-theme="tactical"] .metric, html[data-theme="tactical"] .period-metric,
             html[data-theme="tactical"] .panel {
@@ -430,9 +438,8 @@ public static class Dashboard
                 background: linear-gradient(110deg, #fff7ed 0%, #fffdfa 72%, #f6ebdb);
                 border: 1px solid #e9d8c4; padding-top: 38px; padding-bottom: 38px;
             }
-            html[data-theme="studio"] .hero:after {
-                content: "○"; font-family: Georgia, serif; font-size: 230px;
-                right: 6%; top: -55px; color: #c77e3412;
+            html[data-theme="studio"] .hero::after {
+                content: "○"; font-family: Georgia, serif; font-size: 128px;
             }
             html[data-theme="studio"] h2 {
                 font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 500;
@@ -468,8 +475,8 @@ public static class Dashboard
                 border-color: #9772bcaa; backdrop-filter: blur(14px);
                 box-shadow: 0 18px 48px #04051545, inset 0 1px 0 #ffffff34;
             }
-            html[data-theme="prism"] .hero:after {
-                content: "◇"; font-size: 200px; right: 4%; top: -26px; color: #dbbaff15;
+            html[data-theme="prism"] .hero::after {
+                content: "◇"; font-size: 128px;
             }
             html[data-theme="prism"] .metric, html[data-theme="prism"] .period-metric,
             html[data-theme="prism"] .panel {
@@ -500,9 +507,8 @@ public static class Dashboard
                     linear-gradient(115deg, #5c2516, #2d1c17 62%, #171210);
                 box-shadow: 0 16px 36px #05040366, inset 0 2px 0 #fb954f45;
             }
-            html[data-theme="ember"] .hero:after {
-                content: "✶"; font-family: Georgia, serif; font-size: 180px;
-                right: 8%; top: -28px; color: #ff953014;
+            html[data-theme="ember"] .hero::after {
+                content: "✶"; font-family: Georgia, serif; font-size: 122px;
             }
             html[data-theme="ember"] .metric, html[data-theme="ember"] .period-metric,
             html[data-theme="ember"] .panel {
@@ -531,8 +537,8 @@ public static class Dashboard
             html[data-theme="blueprint"] .hero {
                 background: linear-gradient(115deg, #165474f2, #0d3756ee 65%, #0a2e4cee);
             }
-            html[data-theme="blueprint"] .hero:after {
-                content: "◎"; font-size: 150px; right: 6%; top: -4px; color: #9fe4f917;
+            html[data-theme="blueprint"] .hero::after {
+                content: "◎"; font-size: 118px;
             }
             html[data-theme="blueprint"] h2, html[data-theme="blueprint"] th,
             html[data-theme="blueprint"] .metric .label,
@@ -556,13 +562,15 @@ public static class Dashboard
             }
             /* Structural differences are deliberate; these are not just palette swaps. */
             html[data-theme="carbon"] body { background: var(--page); }
-            html[data-theme="carbon"] .hero:after { content: none; }
+            html[data-theme="carbon"] .hero::after { content: none; }
             html[data-theme="carbon"] .hero-squad { position: relative; isolation: isolate; }
             html[data-theme="carbon"] .hero-squad::after {
                 content: "////"; position: absolute; left: 50%; top: 50%;
-                transform: translate(-50%, -50%); text-align: center; width: 100%;
-                font: 900 86px/1 "Segoe UI", sans-serif; letter-spacing: -11px;
-                color: #ffffff0c; pointer-events: none; z-index: -1;
+                transform: translate(-50%, -50%);
+                width: 140px; height: 140px; display: flex;
+                align-items: center; justify-content: center; text-align: center;
+                font: 900 72px/1 "Segoe UI", sans-serif; letter-spacing: -10px;
+                color: var(--hero-ornament); pointer-events: none; z-index: -1;
             }
             html[data-theme="carbon"] h1 { letter-spacing: -1.3px; font-weight: 900; }
             html[data-theme="carbon"] .metric .num { font-variant-numeric: tabular-nums; }
@@ -580,7 +588,7 @@ public static class Dashboard
                 background-size: auto, 42px 42px, 42px 42px, auto;
             }
             html[data-theme="arcade"] .hero { box-shadow: 0 0 32px #c34cc31c; }
-            html[data-theme="arcade"] .hero:after { content: "◇"; top: -26px; right: 5%; font-size: 215px; }
+            html[data-theme="arcade"] .hero::after { content: "◇"; font-size: 130px; }
             html[data-theme="arcade"] .panel, html[data-theme="arcade"] .metric,
             html[data-theme="arcade"] .period-metric { box-shadow: 0 6px 24px #0a041c62; }
             html[data-theme="arcade"] .chart-fill { box-shadow: 0 0 12px #ff79c74a; }
@@ -594,7 +602,7 @@ public static class Dashboard
             html[data-theme="glacier"] .period-metric { backdrop-filter: blur(12px);
                 box-shadow: 0 12px 35px #4181a214; }
             html[data-theme="glacier"] .hero { box-shadow: 0 14px 35px #3e88b120; }
-            html[data-theme="glacier"] .hero:after { content: "✳"; font-size: 200px; top: -25px; }
+            html[data-theme="glacier"] .hero::after { content: "✳"; font-size: 122px; }
             html[data-theme="glacier"] .chart-fill { border-radius: 12px 12px 0 0; }
             html[data-theme="glacier"] .button, html[data-theme="glacier"] .control,
             html[data-theme="glacier"] .theme-select { border-radius: 14px; }
@@ -605,14 +613,26 @@ public static class Dashboard
             html[data-theme="solar"] .hero {
                 background: radial-gradient(circle at 86% 22%, #ffc26a20 0, transparent 31%),
                   linear-gradient(120deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c)); }
-            html[data-theme="solar"] .hero:after {
-                content: "☼"; top: 50%; right: 7%; transform: translateY(-50%);
-                font-size: 98px;
-            }
+            html[data-theme="solar"] .hero::after { content: "☼"; font-size: 96px; }
             html[data-theme="solar"] .metric, html[data-theme="solar"] .period-metric {
                 background: linear-gradient(145deg, #3f2830, var(--surface) 80%); }
             html[data-theme="solar"] .total { text-shadow: 0 7px 24px #17101855; }
             html[data-theme="solar"] .chart-fill { border-radius: 8px 8px 0 0; }
+            /* Light themes need explicitly dark inherited text despite dark default CSS. */
+            html[data-theme="studio"], html[data-theme="glacier"] {
+                color: var(--text);
+            }
+            html[data-theme="studio"] h1 { color: #243047; }
+            html[data-theme="studio"] h1 span { color: #b85a36; }
+            html[data-theme="studio"] .metric .num,
+            html[data-theme="studio"] .period-metric .num,
+            html[data-theme="studio"] .squad-total,
+            html[data-theme="studio"] .chart-value { color: #243047; }
+            html[data-theme="studio"] .metric .label,
+            html[data-theme="studio"] .period-metric .label,
+            html[data-theme="studio"] .subtitle,
+            html[data-theme="studio"] .secondary,
+            html[data-theme="studio"] .muted { color: #5c6d80; }
             [hidden] { display: none !important; }
             @media (max-width: 760px) {
                 .shell { padding: 20px 14px 50px; }
