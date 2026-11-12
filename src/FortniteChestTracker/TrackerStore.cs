@@ -498,10 +498,41 @@ public sealed class TrackerStore
                     squadReader.IsDBNull(6) ? null : squadReader.GetInt32(6)));
             }
         }
+        // Chest events are already stored for every newly analyzed replay.
+        // Keep their relative times so Treasure Hour bonuses can be assigned
+        // to each exact opening, even if a match straddles a bonus boundary.
+        var chestEvents = new Dictionary<string, List<ChestEvent>>(StringComparer.Ordinal);
+        using (var eventsCommand = db.CreateCommand())
+        {
+            eventsCommand.CommandText = """
+                SELECT e.session_id, e.second, e.kind, e.blueprint, e.destroyed
+                FROM chest_events e
+                JOIN matches m ON m.session_id = e.session_id
+                WHERE TRIM(m.playlist) COLLATE NOCASE IN (
+                    'Playlist_NoBuildBR_Solo', 'Playlist_NoBuildBR_Duo',
+                    'Playlist_NoBuildBR_Trio', 'Playlist_NoBuildBR_Squad')
+                ORDER BY e.session_id, e.ordinal
+                """;
+            using var eventReader = eventsCommand.ExecuteReader();
+            while (eventReader.Read())
+            {
+                var id = eventReader.GetString(0);
+                if (!chestEvents.TryGetValue(id, out var list))
+                {
+                    list = new List<ChestEvent>();
+                    chestEvents.Add(id, list);
+                }
+                list.Add(new ChestEvent(eventReader.GetDouble(1),
+                    eventReader.GetString(2), eventReader.GetString(3),
+                    eventReader.GetInt32(4) != 0));
+            }
+        }
         return new TrackerSnapshot(matches.Select(m => m with
         {
             TeamMembers = groups.TryGetValue(m.SessionId, out var members)
-                ? members : Array.Empty<TeamMemberResult>()
+                ? members : Array.Empty<TeamMemberResult>(),
+            ChestEvents = chestEvents.TryGetValue(m.SessionId, out var chestList)
+                ? chestList : Array.Empty<ChestEvent>()
         }).ToArray());
     }
 }
@@ -510,6 +541,7 @@ public sealed record MatchSummary(string SessionId, DateTime Date, string Player
     int Chests, int Destroyed, int AmmoBoxes, int OtherContainers)
 {
     public IReadOnlyList<TeamMemberResult> TeamMembers { get; init; } = Array.Empty<TeamMemberResult>();
+    public IReadOnlyList<ChestEvent> ChestEvents { get; init; } = Array.Empty<ChestEvent>();
     public int? Placement { get; init; }
     public double? DurationSeconds { get; init; }
     public DateTime? EndedUtc => DurationSeconds is double seconds && seconds > 0
