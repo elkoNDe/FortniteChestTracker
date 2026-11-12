@@ -330,3 +330,15 @@ test('Ticket dorado: fórmula y tarjeta compatibles con los diez estilos', () =>
   assert.doesNotMatch(dashboard, /ticket-progress|ticket-progressbar/,
     'No utilizar barras de progreso que sugieran garantías falsas');
 });
+
+test('La tarjeta del ticket usa los rótulos compactos solicitados', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname,
+    '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  assert.match(dashboard, /Party: <strong id="ticket-party-chance">/);
+  assert.match(dashboard, /Próxima Treasure Hour: /);
+  assert.match(dashboard, /ticket.NextHourConfirmed \? " \(confirmada\)" : " \(prevista\)"/);
+  assert.doesNotMatch(dashboard, /La party es aproximada:|Calendario offline; las franjas futuras son previsiones\.|Party observada:|Próxima franja:|sin confirmar/);
+  assert.match(dashboard, /Cada cofre es independiente: no existe progreso garantizado/);
+});
