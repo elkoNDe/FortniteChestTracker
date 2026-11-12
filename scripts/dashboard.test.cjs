@@ -200,12 +200,14 @@ test('adornos: posición, escala y capa común para todos los diseños', () => {
   const motifs = ['arena', 'tactical', 'studio', 'prism', 'arcade',
     'glacier', 'solar', 'ember', 'blueprint'];
   for (const theme of motifs) {
-    const motif = dashboard.match(new RegExp('html\\\\[data-theme="' + theme +
-      '"\\\\] \\\\.hero::after \\\\{([^}]*)\\\\}'));
-    assert.ok(motif, 'Falta adorno de ' + theme);
-    assert.doesNotMatch(motif[1], /\b(?:top|right|left|bottom|transform|width|height)\s*:/,
-      'El adorno de ' + theme + ' sobreescribe su posición o caja');
-    const size = Number(motif[1].match(/font-size:\s*(\d+)px/)?.[1]);
+    const selector = 'html[data-theme="' + theme + '"] .hero::after {';
+    const start = dashboard.indexOf(selector);
+    assert.ok(start >= 0, 'Falta adorno de ' + theme);
+    const end = dashboard.indexOf('}', start);
+    const motif = dashboard.slice(start + selector.length, end);
+    assert.doesNotMatch(motif, /\b(?:top|right|left|bottom|transform|width|height)\s*:/,
+      'El adorno de ' + theme + ' sobreescribe su posicion o caja');
+    const size = Number(motif.match(/font-size:\s*(\d+)px/)?.[1]);
     assert.ok(size >= 96 && size <= 130, 'Escala fuera de rango en ' + theme);
   }
   const carbon = dashboard.match(/html\[data-theme="carbon"\] \.hero-squad::after \{([^}]*)\}/);
