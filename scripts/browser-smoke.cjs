@@ -54,6 +54,18 @@ try {
     "Falta la hora de revisión o el número de repeticiones pendientes.");
   assert.match(html, /id="monitor-imported">Sin nuevas partidas en esta sesión</,
     "El monitor no indica si ha importado partidas nuevas.");
+  assert.match(html, /id="ticket-chance">[0-9]+,[0-9]{4} %</,
+    "Falta la probabilidad acumulada calculada del ticket.");
+  assert.match(html, /id="ticket-own-chests">[0-9]/,
+    "Falta el total de cofres de la temporada incluyendo destruidos.");
+  assert.match(html, /id="ticket-boosted">[0-9]/,
+    "No se presentan los intentos con bono del Tesoro.");
+  assert.match(html, /id="ticket-party-chance">[0-9]+,[0-9]{4} %</,
+    "Falta la probabilidad estimada de la party.");
+  assert.match(html, /id="ticket-next-hour">/,
+    "No se indica el próximo horario del Tesoro.");
+  assert.match(html, /Cada cofre es independiente: no existe progreso garantizado/,
+    "El dashboard debe explicar que no hay probabilidad acumulativa por intento.");
   assert.match(html, /id="today-chests">[0-9]/, "El script no actualiza los cofres de hoy.");
   assert.match(html, /id="week-chests">[0-9]/, "El script no actualiza los cofres semanales.");
   assert.match(html, /id="month-chests">[0-9]/, "El script no actualiza los cofres mensuales.");
