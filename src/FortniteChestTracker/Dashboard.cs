@@ -810,7 +810,11 @@ public static class Dashboard
             </section>
             <div class="footer">Fortnite ChestTracker · Sin conexión al juego · Sin telemetría · No afiliado a Epic Games</div>
             </main>
-            <script id="monitor-data" type="application/json">{{monitorPayload}}</script>
+            <script id="monitor-data" type="application/json">
+            """);
+        sb.Append(monitorPayload);
+        sb.Append("""
+            </script>
             <script id="match-data" type="application/json">
             """);
         sb.Append(payload);
