@@ -228,6 +228,53 @@ public static class Dashboard
                 --owner-top: #d4afff; --team-bottom: #347ca0; --team-top: #88dcf3;
                 --row-alt: #272346; --table-rule: #383457; --radius: 20px; --hero-radius: 26px;
             }
+            /* Four extra looks: industrial, arcade, frosted glass and sunset.
+               All are offline CSS only and keep the same dashboard content. */
+            html[data-theme="carbon"] {
+                --page: #101112; --glow: #34383c44; --text: #f0f0ec; --muted: #a9acae;
+                --surface: #1a1c1e; --line: #505358; --accent: #ff715c; --team: #d8dde0;
+                --hero-a: #2b2c2e; --hero-b: #202123; --hero-c: #171819; --hero-line: #696a6a;
+                --hero-note: #b7bdc0; --hero-label: #d8dddc; --hero-ornament: #ffffff08;
+                --control-bg: #161819; --control-border: #676a70; --control-text: #f0f0ec;
+                --button-bg: #25282a; --button-border: #62656a; --selected: #c34d3e;
+                --hover: #373a3d; --chart-hover: #333537; --owner-bottom: #a63d30;
+                --owner-top: #ff8b74; --team-bottom: #68747d; --team-top: #dce3e8;
+                --row-alt: #242628; --table-rule: #36393c; --radius: 3px; --hero-radius: 3px;
+            }
+            html[data-theme="arcade"] {
+                --page: #0b0920; --glow: #782baf66; --text: #fbf5ff; --muted: #c8aedb;
+                --surface: #1b1335; --line: #614686; --accent: #ff79c7; --team: #72e5e3;
+                --hero-a: #45216b; --hero-b: #271c53; --hero-c: #14284d; --hero-line: #bb66dc;
+                --hero-note: #dcc6fa; --hero-label: #f2cbff; --hero-ornament: #e392ff12;
+                --control-bg: #1b1438; --control-border: #78529b; --control-text: #faf3ff;
+                --button-bg: #322051; --button-border: #8554aa; --selected: #934a9b;
+                --hover: #4c3278; --chart-hover: #43275d; --owner-bottom: #ae398a;
+                --owner-top: #ff92d5; --team-bottom: #277f9e; --team-top: #7ff7ef;
+                --row-alt: #281d44; --table-rule: #48365e; --radius: 11px; --hero-radius: 16px;
+            }
+            html[data-theme="glacier"] {
+                color-scheme: light;
+                --page: #eaf4fa; --glow: #b9e0f9cc; --text: #22384d; --muted: #617e93;
+                --surface: #ffffffcf; --line: #d2e4ef; --accent: #166fbd; --team: #009aaa;
+                --hero-a: #d3edfb; --hero-b: #e6f4ff; --hero-c: #f9fdff; --hero-line: #b5d9ee;
+                --hero-note: #56768e; --hero-label: #47759b; --hero-ornament: #3f8bd012;
+                --control-bg: #f8fcff; --control-border: #a9ccdf; --control-text: #21445b;
+                --button-bg: #ebf6fc; --button-border: #b5d7e8; --selected: #2478b9;
+                --hover: #d9edf9; --chart-hover: #d6ecfa; --owner-bottom: #337ebd;
+                --owner-top: #6bbbf0; --team-bottom: #078c9d; --team-top: #64d4dc;
+                --row-alt: #eaf6fc; --table-rule: #dceaf3; --radius: 23px; --hero-radius: 29px;
+            }
+            html[data-theme="solar"] {
+                --page: #1b1417; --glow: #a7513559; --text: #fff5ea; --muted: #cfaca4;
+                --surface: #302026; --line: #64444b; --accent: #ffc26a; --team: #ff977c;
+                --hero-a: #8d3e44; --hero-b: #653242; --hero-c: #342233; --hero-line: #b56a64;
+                --hero-note: #f1c4b2; --hero-label: #ffe2bd; --hero-ornament: #ffd9a319;
+                --control-bg: #281b21; --control-border: #8b5660; --control-text: #fff4e9;
+                --button-bg: #4b3036; --button-border: #8f565d; --selected: #a75453;
+                --hover: #634049; --chart-hover: #633944; --owner-bottom: #ca673f;
+                --owner-top: #ffc46d; --team-bottom: #b64b63; --team-top: #ff997d;
+                --row-alt: #3c2830; --table-rule: #59373f; --radius: 20px; --hero-radius: 26px;
+            }
             html { background: var(--page); color: var(--text); }
             body { background: radial-gradient(ellipse at 12% -8%, var(--glow) 0%, transparent 47%), var(--page); }
             .subtitle, .secondary, .period-summary, .metric .label, .period-metric .label,
@@ -273,9 +320,6 @@ public static class Dashboard
             .theme-picker label { color: var(--muted); font-size: 13px; }
             .theme-select { border: 1px solid var(--control-border); border-radius: 10px;
                 padding: 10px 34px 10px 12px; font: inherit; font-size: 13px; cursor: pointer; }
-            html[data-theme="tactical"] .metric, html[data-theme="tactical"] .period-metric,
-            html[data-theme="tactical"] .panel { box-shadow: inset 3px 0 0 #b8f47f18; }
-            html[data-theme="tactical"] .hero { border-left: 4px solid var(--accent); }
             html[data-theme="tactical"] .total, html[data-theme="tactical"] .metric .num {
                 font-variant-numeric: tabular-nums; }
             html[data-theme="studio"] .hero, html[data-theme="studio"] .panel,
@@ -284,6 +328,56 @@ public static class Dashboard
             html[data-theme="studio"] .segment button.active { color: #fff; }
             html[data-theme="studio"] .chart-value { color: #9f472e; }
             html[data-theme="prism"] .hero { box-shadow: 0 18px 40px #6b3d9926; }
+            /* Structural differences are deliberate; these are not just palette swaps. */
+            html[data-theme="carbon"] body { background: var(--page); }
+            html[data-theme="carbon"] .hero:after { content: "////"; font: 900 92px/1 "Segoe UI", sans-serif;
+                letter-spacing: -12px; top: 10px; right: 8%; }
+            html[data-theme="carbon"] h1 { letter-spacing: -1.3px; font-weight: 900; }
+            html[data-theme="carbon"] .metric .num { font-variant-numeric: tabular-nums; }
+            html[data-theme="carbon"] .chart-fill { border-radius: 0; }
+            html[data-theme="carbon"] .chart-bar { border-radius: 0; }
+            html[data-theme="carbon"] .button, html[data-theme="carbon"] .control,
+            html[data-theme="carbon"] .segment, html[data-theme="carbon"] .segment button,
+            html[data-theme="carbon"] .legend-toggle, html[data-theme="carbon"] .theme-select {
+                border-radius: 3px; }
+            html[data-theme="carbon"] th { letter-spacing: 1.4px; }
+            html[data-theme="arcade"] body {
+                background: radial-gradient(circle at 13% -9%, #9c35be40, transparent 40%),
+                  linear-gradient(#8d52c707 1px, transparent 1px),
+                  linear-gradient(90deg, #8d52c707 1px, transparent 1px), var(--page);
+                background-size: auto, 42px 42px, 42px 42px, auto;
+            }
+            html[data-theme="arcade"] .hero { box-shadow: 0 0 32px #c34cc31c; }
+            html[data-theme="arcade"] .hero:after { content: "◇"; top: -26px; right: 5%; font-size: 215px; }
+            html[data-theme="arcade"] .panel, html[data-theme="arcade"] .metric,
+            html[data-theme="arcade"] .period-metric { box-shadow: 0 6px 24px #0a041c62; }
+            html[data-theme="arcade"] .chart-fill { box-shadow: 0 0 12px #ff79c74a; }
+            html[data-theme="arcade"] .chart-fill-party { box-shadow: 0 0 12px #72e5e352; }
+            html[data-theme="arcade"] .segment button.active { box-shadow: 0 0 12px #ff79c73b; }
+            html[data-theme="glacier"] body {
+                background: radial-gradient(ellipse at 0% 0%, #d3ecffc4, transparent 53%),
+                  radial-gradient(ellipse at 90% 5%, #c8e9eacc, transparent 42%), var(--page);
+            }
+            html[data-theme="glacier"] .panel, html[data-theme="glacier"] .metric,
+            html[data-theme="glacier"] .period-metric { backdrop-filter: blur(12px);
+                box-shadow: 0 12px 35px #4181a214; }
+            html[data-theme="glacier"] .hero { box-shadow: 0 14px 35px #3e88b120; }
+            html[data-theme="glacier"] .hero:after { content: "✳"; font-size: 200px; top: -25px; }
+            html[data-theme="glacier"] .chart-fill { border-radius: 12px 12px 0 0; }
+            html[data-theme="glacier"] .button, html[data-theme="glacier"] .control,
+            html[data-theme="glacier"] .theme-select { border-radius: 14px; }
+            html[data-theme="solar"] body {
+                background: radial-gradient(ellipse at 70% -10%, #c55c4159, transparent 54%),
+                  radial-gradient(ellipse at 0% 25%, #8d435027, transparent 43%), var(--page);
+            }
+            html[data-theme="solar"] .hero {
+                background: radial-gradient(circle at 86% 22%, #ffc26a20 0, transparent 31%),
+                  linear-gradient(120deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c)); }
+            html[data-theme="solar"] .hero:after { content: "☼"; top: -25px; right: 6%; font-size: 210px; }
+            html[data-theme="solar"] .metric, html[data-theme="solar"] .period-metric {
+                background: linear-gradient(145deg, #3f2830, var(--surface) 80%); }
+            html[data-theme="solar"] .total { text-shadow: 0 7px 24px #17101855; }
+            html[data-theme="solar"] .chart-fill { border-radius: 8px 8px 0 0; }
             [hidden] { display: none !important; }
             @media (max-width: 760px) {
                 .shell { padding: 20px 14px 50px; }
@@ -304,6 +398,8 @@ public static class Dashboard
                   <select class="theme-select" id="theme-select" aria-label="Estilo visual">
                     <option value="arena">Arena</option><option value="tactical">Tactical HUD</option>
                     <option value="studio">Studio Light</option><option value="prism">Prism</option>
+                    <option value="carbon">Carbon</option><option value="arcade">Neon Arcade</option>
+                    <option value="glacier">Glacier</option><option value="solar">Solar Flare</option>
                   </select></div>
             </header>
             <section class="hero">
