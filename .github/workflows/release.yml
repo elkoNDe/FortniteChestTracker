@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.6: publish selectable dashboard themes, EXE branding and cleaner header.
+# v0.3.7: publish eight themes and remove Tactical HUD's left accent.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -83,7 +83,9 @@ jobs:
 
           - Contador local de cofres a partir de repeticiones Fortnite.
           - Estadísticas personales, equipo, historial y panel HTML.
-          - Cuatro estilos visuales seleccionables: Arena, Tactical HUD, Studio Light y Prism.
+          - Ocho estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
+            Carbon, Neon Arcade, Glacier y Solar Flare.
+          - Tactical HUD sin la franja verde lateral.
           - Tema recordado en el navegador e icono original del EXE en la cabecera.
           - Cabecera simplificada sin el aviso de actualización.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
