@@ -31,14 +31,17 @@ try {
     Copy-Item -Path (Join-Path $published '*') -Destination $work -Recurse -Force
     $copy = Join-Path $work 'FortniteChestTracker.exe'
 
-    & $copy --self-test
-    if ($LASTEXITCODE -ne 0) { throw "Han fallado los tests del EXE estándar: $LASTEXITCODE" }
+    # A WinExe returns immediately to PowerShell's call operator; explicitly
+    # wait before checking the code or removing its runtime DLLs.
+    $self = Start-Process -FilePath $copy -ArgumentList '--self-test' -Wait -PassThru
+    if ($self.ExitCode -ne 0) { throw "Han fallado los tests del EXE estándar: $($self.ExitCode)" }
 
     $replays = Join-Path $isolated 'replays'
     $data = Join-Path $isolated 'data'
     New-Item -ItemType Directory -Path $replays | Out-Null
-    & $copy --once --no-browser --demos $replays --data $data
-    if ($LASTEXITCODE -ne 0) { throw "Ha fallado el arranque estándar: $LASTEXITCODE" }
+    $onceArgs = '--once --no-browser --demos "' + $replays + '" --data "' + $data + '"'
+    $once = Start-Process -FilePath $copy -ArgumentList $onceArgs -Wait -PassThru
+    if ($once.ExitCode -ne 0) { throw "Ha fallado el arranque estándar: $($once.ExitCode)" }
     if (-not (Test-Path (Join-Path $data 'tracker.db')) -or
         -not (Test-Path (Join-Path $data 'dashboard.html'))) {
         throw 'La distribución estándar no genera sus datos correctamente.'
