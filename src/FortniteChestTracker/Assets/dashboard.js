@@ -109,7 +109,7 @@
   } catch (_) { /* file:// origins may disallow sessionStorage */ }
 
   const $ = id => document.getElementById(id);
-  const themes = ["arena", "tactical", "studio", "prism"];
+  const themes = ["arena", "tactical", "studio", "prism", "carbon", "arcade", "glacier", "solar"];
   const themeSelect = $("theme-select");
   const THEME_KEY = "fortnite-chesttracker-theme";
   // A theme is a visual preference, independent of the session's chart/filter state.
