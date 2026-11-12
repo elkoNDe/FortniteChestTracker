@@ -35,6 +35,71 @@ public static class SelfTest
                 "modo excluido no se guarda y no se reanaliza constantemente");
 
             var snapshot = store.Snapshot();
+            Check(snapshot.Matches[0].ChestEvents.Count == 2 &&
+                snapshot.Matches[0].ChestEvents[1].Destroyed,
+                "SQLite conserva segundos y cofres destruidos para probabilidades");
+
+            // First confirmed Treasure Hour: 7 Nov 19:00-21:00 UTC, 1.5x.
+            var boundary = new MatchSummary("ticket-boundary",
+                new DateTime(2026, 11, 7, 18, 59, 0, DateTimeKind.Utc),
+                "Jugador", "Playlist_NoBuildBR_Solo", 2, 1, 0, 0)
+            {
+                ChestEvents = new[]
+                {
+                    new ChestEvent(0, "Normal", "Normal", false),
+                    new ChestEvent(120, "Normal", "Raro", true)
+                },
+                TeamMembers = new[]
+                {
+                    new TeamMemberResult("owner", "Jugador", true, 2, 1, 0),
+                    new TeamMemberResult("other", "Compañero", false, 2, 0, 0)
+                }
+            };
+            var odds = TicketOdds.Calculate(new TrackerSnapshot(new[] { boundary }),
+                new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
+            var expectedChance = (1.0 -
+                (1.0 - 1.0 / TicketOdds.BaseDenominator) *
+                (1.0 - 1.5 / TicketOdds.BaseDenominator)) * 100.0;
+            Check(odds.OwnChests == 2 && odds.PartyChests == 4 &&
+                odds.BoostedOwnChests == 1 && odds.ProvisionalOwnChests == 0 &&
+                odds.ApproximateOwnChests == 0 &&
+                Math.Abs(odds.OwnPercent - expectedChance) < 1e-9 &&
+                odds.PartyPercent > odds.OwnPercent,
+                "cofre destruido incluido, frontera exacta x1.5 y party sin duplicar propietario");
+            var secondRound = new MatchSummary("ticket-double",
+                new DateTime(2026, 11, 8, 1, 59, 0, DateTimeKind.Utc),
+                "Jugador", "Playlist_NoBuildBR_Solo", 1, 1, 0, 0)
+            {
+                ChestEvents = new[] { new ChestEvent(60, "Normal", "Cofre", true) }
+            };
+            var doubleOdds = TicketOdds.Calculate(new TrackerSnapshot(new[] { secondRound }),
+                new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
+            Check(doubleOdds.OwnChests == 1 && doubleOdds.BoostedOwnChests == 1 &&
+                Math.Abs(doubleOdds.OwnPercent - 2.0 / TicketOdds.BaseDenominator * 100.0) < 1e-9,
+                "segunda sesion del 7/8 noviembre aplica x2 con el segundo exacto");
+            var future = new MatchSummary("ticket-predicted",
+                new DateTime(2026, 11, 14, 19, 0, 0, DateTimeKind.Utc),
+                "Jugador", "Playlist_NoBuildBR_Solo", 1, 0, 0, 0)
+            {
+                ChestEvents = new[] { new ChestEvent(0, "Normal", "Cofre", false) }
+            };
+            var forecast = TicketOdds.Calculate(new TrackerSnapshot(new[] { future }),
+                new DateTimeOffset(2026, 11, 14, 19, 10, 0, TimeSpan.Zero));
+            Check(forecast.ProvisionalOwnChests == 1 && forecast.BoostedOwnChests == 1 &&
+                forecast.CurrentMultiplier == 1.5 && forecast.CurrentMultiplierProvisional &&
+                forecast.NextHourUtc == new DateTimeOffset(2026, 11, 15, 2, 0, 0, TimeSpan.Zero),
+                "horas futuras se calculan como previsiones y se etiquetan, sin inventar confirmacion");
+            var legacy = new MatchSummary("ticket-legacy",
+                new DateTime(2026, 11, 7, 21, 0, 0, DateTimeKind.Utc),
+                "Jugador", "Playlist_NoBuildBR_Solo", 3, 1, 0, 0);
+            var legacyChance = TicketOdds.Calculate(new TrackerSnapshot(new[] { legacy }),
+                new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
+            Check(legacyChance.OwnChests == 3 && legacyChance.ApproximateOwnChests == 3 &&
+                legacyChance.BoostedOwnChests == 0,
+                "historial sin eventos conserva total y marca la hora como aproximada");
+            var obsolete = legacy with { Date = new DateTime(2026, 10, 31, 20, 0, 0, DateTimeKind.Utc) };
+            Check(TicketOdds.Calculate(new TrackerSnapshot(new[] { obsolete })).OwnChests == 0,
+                "no se mezclan cofres de temporadas previas");
             Check(snapshot.Matches.Count == 1 && snapshot.Chests == 2 && snapshot.Destroyed == 1 &&
                 snapshot.SquadChests == 2 && snapshot.Matches[0].Placement == 3,
                 "estadisticas solo Zero Build y posicion final guardada");
