@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.10: replace three distracting glyphs with restrained CSS geometry.
+# v0.4.0: add native Windows tray mode and reliable offline monitor status.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -85,13 +85,14 @@ jobs:
           - Estadísticas personales, equipo, historial y panel HTML.
           - Diez estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
             Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint.
-          - Adornos de los diez estilos unificados en escala y posición.
-          - Arena con dos franjas diagonales sutiles, Tactical HUD con retícula de esquinas
-            y Studio Light con doble aro fino, sin símbolos de texto grandes.
-          - Carbon conserva su motivo centrado en la zona Party.
-          - Contraste legible en Studio Light y Glacier; Arena sin recorte diagonal.
-          - Tema recordado en el navegador e icono original del EXE en la cabecera.
-          - Cabecera simplificada sin el aviso de actualización.
+          - NUEVO: trabaja en segundo plano sin consola, con icono junto al reloj de Windows.
+          - Doble clic en el icono para abrir el dashboard; menú para abrir datos,
+            ver errores y salir limpiamente sin dejar partidas a medio procesar.
+          - Estado en el dashboard: activo, analizando, esperando, error o desconectado.
+            Última comprobación, pendientes y última partida importada, sin servidor.
+          - Se conservan los 10 estilos visuales, filtros e historial, y los comandos
+            --once, --self-test, --backfill-squad, --console y --headless.
+          - Los cambios de diseño de la v0.3.10 siguen incluidos.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
           - Los datos se conservan en tu propio ordenador.
 
