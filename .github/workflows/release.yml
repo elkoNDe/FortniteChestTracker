@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.4.0: add native Windows tray mode and reliable offline monitor status.
+# v0.4.1: Pirate Shop Access odds with per-chest historical Treasure Hours.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -85,14 +85,16 @@ jobs:
           - Estadísticas personales, equipo, historial y panel HTML.
           - Diez estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
             Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint.
-          - NUEVO: trabaja en segundo plano sin consola, con icono junto al reloj de Windows.
-          - Doble clic en el icono para abrir el dashboard; menú para abrir datos,
-            ver errores y salir limpiamente sin dejar partidas a medio procesar.
-          - Estado en el dashboard: activo, analizando, esperando, error o desconectado.
-            Última comprobación, pendientes y última partida importada, sin servidor.
-          - Se conservan los 10 estilos visuales, filtros e historial, y los comandos
-            --once, --self-test, --backfill-squad, --console y --headless.
-          - Los cambios de diseño de la v0.3.10 siguen incluidos.
+          - NUEVO: tarjeta de Pirate Shop Access con probabilidad acumulada teórica
+            desde el 1 de noviembre de 2026; cuenta también los cofres destruidos.
+          - Tasa oficial base 1 entre 137.500; Horas del Tesoro por segundo de apertura.
+          - Se aplica x1,5 el 7 nov 19-21 UTC y x2 el 8 nov 02-04 UTC (confirmados).
+          - Los siguientes sábados se muestran explícitamente como previsiones x1,5;
+            estos horarios pueden cambiar si Epic anuncia novedades.
+          - Probabilidad secundaria de party observada, etiquetada como aproximada.
+          - Cada cofre es independiente: nunca se garantiza conseguir el ticket.
+          - Se mantienen el icono de bandeja sin consola, el estado del monitor, los
+            diez estilos y todos los filtros/historiales. Los datos son locales.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
           - Los datos se conservan en tu propio ordenador.
 
