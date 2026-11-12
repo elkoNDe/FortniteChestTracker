@@ -41,8 +41,16 @@ public static class SelfTest
             Check(snapshot.Matches[0].DurationText == "18:12" &&
                 snapshot.Matches[0].EndedUtc == sample.StartedUtc.AddSeconds(1092),
                 "duración del replay persistida y fecha fin derivada sin alterar la fecha de inicio");
-            var html = Dashboard.Write(snapshot, dir);
+            var onlineStatus = new MonitorStatus("watching", DateTimeOffset.UtcNow, 2,
+                DateTimeOffset.UtcNow.AddMinutes(-5));
+            var html = Dashboard.Write(snapshot, dir, onlineStatus);
             Check(File.Exists(html) && File.Exists(Path.Combine(dir, "matches.csv")), "informes");
+            var onlineHtml = File.ReadAllText(html);
+            Check(onlineHtml.Contains("id=\"monitor-data\"", StringComparison.Ordinal) &&
+                onlineHtml.Contains("\"state\":\"watching\"", StringComparison.Ordinal) &&
+                onlineHtml.Contains("\"pendingCount\":2", StringComparison.Ordinal) &&
+                onlineHtml.Contains("id=\"monitor-indicator\"", StringComparison.Ordinal),
+                "estado del monitor integrado en HTML sin perder el resto de estadisticas");
             Check(File.ReadAllText(Path.Combine(dir, "matches.csv")).StartsWith(
                 "Fecha inicio;Fecha fin;Duracion;Jugador;Posicion;", StringComparison.Ordinal),
                 "CSV con fecha de fin y duración conservando las columnas anteriores");
@@ -65,7 +73,8 @@ public static class SelfTest
                     Placement = i == 0 ? 1 : null,
                     DurationSeconds = i == 0 ? 1092 : null
                 }).ToArray());
-            var extendedPath = Dashboard.Write(hundreds, dir);
+            var extendedPath = Dashboard.Write(hundreds, dir,
+                new MonitorStatus("watching", DateTimeOffset.UtcNow, 2));
             var extendedHtml = File.ReadAllText(extendedPath);
             Check(!extendedHtml.Contains("data-unit=\"week\"") &&
                   extendedHtml.Contains("data-unit=\"day\" aria-pressed=\"true\"") &&
