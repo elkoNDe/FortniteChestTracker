@@ -178,10 +178,54 @@ test('Carbon centra su adorno en Party y Solar Flare reduce el sol', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
-  assert.match(dashboard, /html\[data-theme="carbon"\] \.hero:after \{ content: none; \}/);
+  assert.match(dashboard, /html\[data-theme="carbon"\] \.hero::after \{ content: none; \}/);
   assert.match(dashboard,
     /html\[data-theme="carbon"\] \.hero-squad::after \{[\s\S]*?left: 50%; top: 50%;[\s\S]*?transform: translate\(-50%, -50%\)/);
   assert.match(dashboard,
-    /html\[data-theme="solar"\] \.hero:after \{[\s\S]*?font-size: 98px;/);
-  assert.doesNotMatch(dashboard, /html\[data-theme="solar"\] \.hero:after \{[^}]*font-size: 210px/);
+    /html\[data-theme="solar"\] \.hero::after \{[\s\S]*?font-size: 96px;/);
+  assert.doesNotMatch(dashboard, /html\[data-theme="solar"\] \.hero::after \{[^}]*font-size: 210px/);
+});
+
+test('adornos: posición, escala y capa común para todos los diseños', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  const base = dashboard.match(/\.hero::after \{\s*content: "✦";[\s\S]*?\n\s*\}/);
+  assert.ok(base, 'Falta la caja común de adornos.');
+  assert.match(base[0], /width: 140px; height: 140px; right: 6%; top: 50%/);
+  assert.match(base[0], /transform: translateY\(-50%\)/);
+  assert.match(base[0], /align-items: center; justify-content: center; text-align: center/);
+  assert.match(base[0], /pointer-events: none; z-index: 0/);
+
+  const motifs = ['arena', 'tactical', 'studio', 'prism', 'arcade',
+    'glacier', 'solar', 'ember', 'blueprint'];
+  for (const theme of motifs) {
+    const motif = dashboard.match(new RegExp('html\\\\[data-theme="' + theme +
+      '"\\\\] \\\\.hero::after \\\\{([^}]*)\\\\}'));
+    assert.ok(motif, 'Falta adorno de ' + theme);
+    assert.doesNotMatch(motif[1], /\b(?:top|right|left|bottom|transform|width|height)\s*:/,
+      'El adorno de ' + theme + ' sobreescribe su posición o caja');
+    const size = Number(motif[1].match(/font-size:\s*(\d+)px/)?.[1]);
+    assert.ok(size >= 96 && size <= 130, 'Escala fuera de rango en ' + theme);
+  }
+  const carbon = dashboard.match(/html\[data-theme="carbon"\] \.hero-squad::after \{([^}]*)\}/);
+  assert.ok(carbon);
+  assert.match(carbon[1], /left: 50%; top: 50%/);
+  assert.match(carbon[1], /width: 140px; height: 140px/);
+  assert.match(carbon[1], /align-items: center; justify-content: center/);
+});
+
+test('Arena tiene esquinas normales y Studio Light usa contraste legible', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname, '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  assert.doesNotMatch(dashboard, /clip-path:\s*polygon\(/);
+  const arena = dashboard.match(/html\[data-theme="arena"\] \.hero \{([^}]*)\}/);
+  assert.ok(arena);
+  assert.match(arena[1], /border-radius: 10px/);
+  assert.match(dashboard, /:root \{[^}]*color: var\(--text, #f5f6ff\)/);
+  assert.match(dashboard, /html\[data-theme="studio"\] h1 \{ color: #243047; \}/);
+  assert.match(dashboard, /html\[data-theme="studio"\] h1 span \{ color: #b85a36; \}/);
+  assert.match(dashboard, /html\[data-theme="studio"\] \.metric \.num,[\s\S]*?html\[data-theme="studio"\] \.chart-value \{ color: #243047; \}/);
+  assert.match(dashboard, /html\[data-theme="studio"\], html\[data-theme="glacier"\] \{\s*color: var\(--text\)/);
 });
