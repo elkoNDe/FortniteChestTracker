@@ -170,6 +170,31 @@ public static class Dashboard
             .period-metric .party-count { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #30415f; color: #9fc8ff; font-size: 13px; flex-wrap: wrap; }
             .period-metric .party-count strong { color: #bbd9ff; font-size: 18px; }
             .panel { margin-top: 20px; }
+            /* Compact probability card follows each theme's own palette. */
+            .ticket-card { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);
+                gap:20px; align-items:center; margin-bottom:20px; padding:20px 23px;
+                border-radius:var(--radius,18px); border:1px solid var(--line,#283854);
+                color:var(--text,#f5f6ff);
+                background:linear-gradient(125deg,var(--surface,#111b30),var(--page,#090e1c)); }
+            .ticket-heading { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+            .ticket-mark { display:grid; place-items:center; width:27px; height:27px;
+                border-radius:8px; color:var(--accent,#ffb25f);
+                border:1px solid var(--line,#283854); font-size:18px; }
+            .ticket-heading h2 { font-size:17px; }
+            .ticket-value { color:var(--accent,#ffb25f); font-size:clamp(28px,4vw,39px);
+                font-weight:800; letter-spacing:-1px; line-height:1.2; }
+            .ticket-note { color:var(--muted,#99a8c3); font-size:12px; line-height:1.55; }
+            .ticket-details { border-left:1px solid var(--line,#283854); padding-left:20px;
+                display:grid; gap:10px; }
+            .ticket-details strong { font-weight:700; color:var(--text,#f5f6ff); }
+            .ticket-small { font-size:12px; color:var(--muted,#99a8c3); line-height:1.55; }
+            .ticket-small b { color:var(--text,#f5f6ff); }
+            html[data-theme="ember"] .ticket-card {
+                background:radial-gradient(ellipse at 8% 10%,#f18a3420,transparent 55%),
+                    linear-gradient(130deg,var(--surface),var(--page)); }
+            @media (max-width: 760px) { .ticket-card { grid-template-columns:1fr; }
+                .ticket-details { border-left:0; border-top:1px solid var(--line,#283854);
+                    padding:13px 0 0; } }
             h2 { font-size: 19px; letter-spacing: -.3px; margin: 0; }
             .toolbar { justify-content: flex-start; }
             .control { background: #101a2e; color: #dce6f9; border: 1px solid #3c4d68; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13px; }
@@ -751,8 +776,56 @@ public static class Dashboard
         Metric("Media por partida", data.Average.ToString("0.0", CultureInfo.GetCultureInfo("es-ES")), "Cofres por partida");
         Metric("Récord", data.Record.ToString("N0", CultureInfo.GetCultureInfo("es-ES")), "Máximo en una partida");
         Metric("Destruidos", data.Destroyed.ToString("N0", CultureInfo.GetCultureInfo("es-ES")), "Incluidos en los cofres");
-        sb.Append("""
+        var ticket = TicketOdds.Calculate(data);
+        var es = CultureInfo.GetCultureInfo("es-ES");
+        var personalChance = ticket.OwnPercent.ToString("0.0000", es);
+        var partyChance = ticket.PartyPercent.ToString("0.0000", es);
+        var ownChests = ticket.OwnChests.ToString("N0", es);
+        var partyChests = ticket.PartyChests.ToString("N0", es);
+        var boostedChests = ticket.BoostedOwnChests.ToString("N0", es);
+        var nextRate = (TicketOdds.BaseDenominator / ticket.CurrentMultiplier).ToString("N0", es);
+        var nowBoost = ticket.CurrentMultiplier > 1.0
+            ? " · Hora del Tesoro ×" + ticket.CurrentMultiplier.ToString("0.#", es) +
+              (ticket.CurrentMultiplierProvisional ? " (prevista)" : "")
+            : "";
+        var nextWindow = ticket.NextHourUtc is DateTimeOffset starts
+            ? "Próxima franja: " + starts.ToLocalTime().ToString("ddd dd/MM HH:mm", es) +
+              "–" + starts.AddHours(2).ToLocalTime().ToString("HH:mm", es) +
+              " · ×" + ticket.NextHourMultiplier.ToString("0.#", es) +
+              (ticket.NextHourConfirmed ? " (confirmada)" : " (prevista, sin confirmar)")
+            : "Sin más Horas del Tesoro previstas en este calendario";
+        var provisionalNote = ticket.ProvisionalOwnChests > 0
+            ? " · " + ticket.ProvisionalOwnChests.ToString("N0", es) +
+              " cofres en franjas no confirmadas"
+            : "";
+        var approximatedNote = ticket.ApproximateOwnChests > 0
+            ? " · " + ticket.ApproximateOwnChests.ToString("N0", es) +
+              " cofres sin segundo exacto (hora aproximada)"
+            : "";
+        sb.Append("</section>");
+        sb.Append($"""
+            <section class="ticket-card" aria-label="Probabilidad del ticket dorado">
+              <div>
+                <div class="ticket-heading"><span class="ticket-mark" aria-hidden="true">✧</span>
+                  <h2>Ticket dorado · Pirate Shop Access</h2></div>
+                <div class="ticket-value" id="ticket-chance">{personalChance} %</div>
+                <div class="ticket-note">Probabilidad teórica acumulada de al menos uno · desde 01/11/2026</div>
+                <div class="ticket-small">Tus cofres: <b id="ticket-own-chests">{ownChests}</b>
+                  (incluidos destruidos) · con bono: <b id="ticket-boosted">{boostedChests}</b></div>
+              </div>
+              <div class="ticket-details">
+                <div class="ticket-small">Siguiente cofre: <strong id="ticket-next-rate">1 entre {nextRate}</strong>{nowBoost}</div>
+                <div class="ticket-small">Party observada: <strong id="ticket-party-chance">{partyChance} %</strong>
+                  · {partyChests} cofres, contando los tuyos</div>
+                <div class="ticket-note">La party es aproximada: no hay hora exacta por compañero y
+                  pueden faltar aperturas no atribuibles.</div>
+                <div class="ticket-small" id="ticket-next-hour">{nextWindow}</div>
+                <div class="ticket-note">Calendario offline; las franjas futuras son previsiones.
+                  Cada cofre es independiente: no existe progreso garantizado{provisionalNote}{approximatedNote}.</div>
+              </div>
             </section>
+            """);
+        sb.Append("""
             <section class="period-metrics" aria-label="Estadísticas recientes">
               <article class="period-metric"><div class="label">Hoy</div><div class="num" id="today-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="today-party">—</strong><span>cofres observados</span></div><div class="small" id="today-games"></div></article>
               <article class="period-metric"><div class="label">Esta semana · lunes a domingo</div><div class="num" id="week-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="week-party">—</strong><span>cofres observados</span></div><div class="small" id="week-games"></div></article>

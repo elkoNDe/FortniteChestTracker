@@ -304,3 +304,29 @@ test('v0.4.0: el estado offline queda incorporado en el HTML y detecta el monito
   assert.match(client, /box\.dataset\.state = current/);
   assert.match(client, /Monitor desconectado/);
 });
+
+test('Ticket dorado: fórmula y tarjeta compatibles con los diez estilos', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const odds = read('src/FortniteChestTracker/TicketOdds.cs');
+  const store = read('src/FortniteChestTracker/TrackerStore.cs');
+  const dashboard = read('src/FortniteChestTracker/Dashboard.cs');
+  assert.match(odds, /BaseDenominator = 137_500/);
+  assert.match(odds, /Math\.Log\(1\.0 - multiplier \/ BaseDenominator\)/);
+  assert.match(odds, /Percent\(ownLogSurvival\), Percent\(partyLogSurvival\)/);
+  assert.match(odds, /At\(11, 7, 19, 1\.5, true\)/);
+  assert.match(odds, /At\(11, 8, 2, 2\.0, true\)/);
+  assert.match(odds, /At\(11, 14, 19, 1\.5, false\)/);
+  assert.match(odds, /if \(!ChestTypes\.IsChest\(e\.Kind\)/);
+  assert.match(store, /FROM chest_events e[\s\S]*JOIN matches m/);
+  assert.match(store, /ChestEvents = chestEvents\.TryGetValue/);
+  assert.match(dashboard, /class="ticket-card"/);
+  assert.match(dashboard, /id="ticket-chance"/);
+  assert.match(dashboard, /id="ticket-own-chests"/);
+  assert.match(dashboard, /id="ticket-party-chance"/);
+  assert.match(dashboard, /id="ticket-next-hour"/);
+  assert.match(dashboard, /html\[data-theme="ember"\] \.ticket-card/);
+  assert.doesNotMatch(dashboard, /ticket-progress|ticket-progressbar/,
+    'No utilizar barras de progreso que sugieran garantías falsas');
+});
