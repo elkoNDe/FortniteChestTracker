@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.4.3: shorten party summary caption to 'Total' without changing the counter.
+# v0.4.4: add final period after 'contando los tuyos' in ticket party text.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -93,6 +93,7 @@ jobs:
             estos horarios pueden cambiar si Epic anuncia novedades.
           - Probabilidad secundaria de Party y etiqueta «Próxima Treasure Hour».
           - El resumen de cofres de party muestra solo «Total», sin texto adicional.
+          - La tarjeta del ticket añade el punto final a «contando los tuyos.».
           - Cada cofre es independiente: nunca se garantiza conseguir el ticket.
           - Se mantienen el icono de bandeja sin consola, el estado del monitor, los
             diez estilos y todos los filtros/historiales. Los datos son locales.
