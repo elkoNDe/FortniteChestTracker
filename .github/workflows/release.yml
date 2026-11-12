@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.5: publish the verified interactive chart legend (Tú / Party).
+# v0.3.6: publish selectable dashboard themes, EXE branding and cleaner header.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -83,6 +83,9 @@ jobs:
 
           - Contador local de cofres a partir de repeticiones Fortnite.
           - Estadísticas personales, equipo, historial y panel HTML.
+          - Cuatro estilos visuales seleccionables: Arena, Tactical HUD, Studio Light y Prism.
+          - Tema recordado en el navegador e icono original del EXE en la cabecera.
+          - Cabecera simplificada sin el aviso de actualización.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
           - Los datos se conservan en tu propio ordenador.
 
