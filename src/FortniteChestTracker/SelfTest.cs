@@ -46,10 +46,6 @@ public static class SelfTest
             var html = Dashboard.Write(snapshot, dir, onlineStatus);
             Check(File.Exists(html) && File.Exists(Path.Combine(dir, "matches.csv")), "informes");
             var onlineHtml = File.ReadAllText(html);
-            var monitorStart = onlineHtml.IndexOf("id=\"monitor-data\"", StringComparison.Ordinal);
-            Console.WriteLine("DEBUG monitor payload: " +
-                (monitorStart < 0 ? "(missing tag)"
-                    : onlineHtml.Substring(monitorStart, Math.Min(300, onlineHtml.Length - monitorStart))));
             Check(onlineHtml.Contains("id=\"monitor-data\"", StringComparison.Ordinal) &&
                 onlineHtml.Contains("\"state\":\"watching\"", StringComparison.Ordinal) &&
                 onlineHtml.Contains("\"pendingCount\":2", StringComparison.Ordinal) &&
