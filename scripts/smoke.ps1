@@ -13,8 +13,9 @@ try {
     $browserFixture = Join-Path $isolated 'dashboard-browser-test.html'
     $env:FCT_DASHBOARD_TEST_OUTPUT = $browserFixture
     try {
-        & $copy --self-test
-        if ($LASTEXITCODE -ne 0) { throw "El EXE aislado no pasa las pruebas (exit $LASTEXITCODE)." }
+        # WinExe does not open a console; wait for its actual process exit code.
+        $self = Start-Process -FilePath $copy -ArgumentList '--self-test' -Wait -PassThru
+        if ($self.ExitCode -ne 0) { throw "El EXE aislado no pasa las pruebas (exit $($self.ExitCode))." }
     }
     finally {
         Remove-Item Env:FCT_DASHBOARD_TEST_OUTPUT -ErrorAction SilentlyContinue
@@ -25,18 +26,25 @@ try {
     $data = Join-Path $isolated 'data'
     $replays = Join-Path $isolated 'demos'
     New-Item -ItemType Directory -Path $replays | Out-Null
-    & $copy --once --no-browser --demos $replays --data $data
-    if ($LASTEXITCODE -ne 0) { throw "El arranque de la aplicacion ha fallado (exit $LASTEXITCODE)." }
+    $onceArgs = '--once --no-browser --demos "' + $replays + '" --data "' + $data + '"'
+    $once = Start-Process -FilePath $copy -ArgumentList $onceArgs -Wait -PassThru
+    if ($once.ExitCode -ne 0) { throw "El arranque de la aplicacion ha fallado (exit $($once.ExitCode))." }
     if (-not (Test-Path (Join-Path $data 'dashboard.html'))) { throw 'No se ha generado dashboard.html.' }
     if (-not (Test-Path (Join-Path $data 'tracker.db'))) { throw 'No se ha generado tracker.db.' }
     # Start in watch mode and check the process remains running instead of flashing and exiting.
     $watch = Join-Path $isolated 'watch-data'
-    $process = Start-Process -FilePath $copy -ArgumentList @('--watch','--no-browser','--demos', $replays, '--data', $watch) -PassThru -WorkingDirectory $isolated
+    $watchArgs = '--watch --headless --no-browser --demos "' + $replays + '" --data "' + $watch + '"'
+    $process = Start-Process -FilePath $copy -ArgumentList $watchArgs -PassThru -WorkingDirectory $isolated
     try {
         Start-Sleep -Seconds 4
         $process.Refresh()
         if ($process.HasExited) { throw "La aplicacion se cierra al iniciar (exit $($process.ExitCode))." }
-        if (-not (Test-Path (Join-Path $watch 'dashboard.html'))) { throw 'El modo vigilancia no genera el dashboard.' }
+        $liveDashboard = Join-Path $watch 'dashboard.html'
+        if (-not (Test-Path $liveDashboard)) { throw 'El modo vigilancia no genera el dashboard.' }
+        $liveHtml = Get-Content -LiteralPath $liveDashboard -Raw
+        if ($liveHtml -notmatch '"state":"watching"') {
+            throw 'El monitor no ha actualizado su estado activo en el dashboard.'
+        }
     }
     finally {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
