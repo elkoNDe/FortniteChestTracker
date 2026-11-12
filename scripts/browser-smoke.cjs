@@ -110,7 +110,12 @@ try {
   assert.match(html, /data-unit="day"[^>]*aria-pressed="true"/, "El gráfico no inicia en Diario.");
   assert.match(html, /data-unit="month"/, "Falta la opción Mensual.");
   assert.doesNotMatch(html, /data-unit="week"/, "Semanal no debe aparecer en el selector del gráfico.");
-  console.log("OK: gráfico Diario/Mensual, contadores y 10 partidas paginadas en Edge.");
+  for (const theme of ["arena", "tactical", "studio", "prism", "carbon", "arcade", "glacier", "solar"]) {
+    assert.ok(html.includes('<option value="' + theme + '">'), "El selector no incluye " + theme);
+  }
+  assert.match(html, /<html[^>]*data-theme="arena"/, "No se aplica el tema inicial.");
+  assert.doesNotMatch(html, /Datos locales · Actualización cada 20 s/, "El aviso antiguo sigue visible.");
+  console.log("OK: ocho temas, branding, gráfico, contadores e historial en Edge.");
 } finally {
   fs.rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
 }
