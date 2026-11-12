@@ -7,7 +7,8 @@ namespace FortniteChestTracker;
 
 public static class Dashboard
 {
-    public static string Write(TrackerSnapshot snapshot, string dataFolder)
+    public static string Write(TrackerSnapshot snapshot, string dataFolder,
+        MonitorStatus? monitor = null, bool exportCsv = true)
     {
         Directory.CreateDirectory(dataFolder);
         var destination = Path.Combine(dataFolder, "dashboard.html");
@@ -15,11 +16,11 @@ public static class Dashboard
         // supply an unfiltered snapshot (old/imported/test records).
         var filtered = new TrackerSnapshot(snapshot.Matches
             .Where(m => PlaylistRules.IsAllowed(m.Playlist)).ToArray());
-        var html = Render(filtered);
+        var html = Render(filtered, monitor);
         var temp = destination + ".tmp";
         File.WriteAllText(temp, html, new UTF8Encoding(false));
         File.Move(temp, destination, overwrite: true);
-        ExportCsv(filtered, Path.Combine(dataFolder, "matches.csv"));
+        if (exportCsv) ExportCsv(filtered, Path.Combine(dataFolder, "matches.csv"));
         return destination;
     }
 
@@ -47,7 +48,7 @@ public static class Dashboard
         File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
     }
 
-    private static string Render(TrackerSnapshot data)
+    private static string Render(TrackerSnapshot data, MonitorStatus? monitor)
     {
         // All statistics and the history are local. The JS source is embedded in the EXE,
         // hashed into a restrictive CSP, and receives untrusted replay fields only as JSON.
@@ -89,8 +90,15 @@ public static class Dashboard
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Default
             });
 
+        var monitorPayload = System.Text.Json.JsonSerializer.Serialize(monitor,
+            new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Default
+            });
+
         var sb = new StringBuilder();
-        sb.Append($$"""
+        sb.Append($"""
             <!doctype html>
             <html lang="es"><head><meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -106,6 +114,25 @@ public static class Dashboard
             .shell { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
             .top, .section-head, .toolbar, .pagination, .period-summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
             .top { margin-bottom: 25px; }
+            .top-utilities { display: flex; align-items: center; justify-content: flex-end;
+                flex-wrap: wrap; gap: 15px; }
+            .monitor-indicator { display: flex; align-items: center; gap: 10px; min-width: 205px;
+                background: var(--surface, #111b30); color: var(--text, #f5f6ff);
+                border: 1px solid var(--line, #283854); border-radius: 12px;
+                padding: 9px 12px; }
+            .monitor-indicator strong { display: block; font-size: 12px; line-height: 1.4; }
+            .monitor-signal { display: block; width: 9px; height: 9px; flex: 0 0 9px;
+                border-radius: 50%; background: #55cf97; box-shadow: 0 0 0 3px #55cf971c; }
+            .monitor-indicator[data-state="processing"] .monitor-signal,
+            .monitor-indicator[data-state="waiting"] .monitor-signal,
+            .monitor-indicator[data-state="starting"] .monitor-signal {
+                background: #e9b85a; box-shadow: 0 0 0 3px #e9b85a22; }
+            .monitor-indicator[data-state="error"] .monitor-signal,
+            .monitor-indicator[data-state="offline"] .monitor-signal,
+            .monitor-indicator[data-state="stopped"] .monitor-signal {
+                background: #db7070; box-shadow: 0 0 0 3px #db707021; }
+            .monitor-details { display: block; color: var(--muted, #99a8c3);
+                font-size: 11px; line-height: 1.4; margin-top: 3px; }
             .brand { display: flex; align-items: center; gap: 14px; }
             .logo { display: grid; place-items: center; width: 53px; height: 53px; flex: 0 0 53px; }
             .logo img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 14px #0008); }
@@ -673,6 +700,12 @@ public static class Dashboard
                     <h1>FORTNITE <span>CHESTTRACKER</span></h1>
                     <p class="subtitle">Estadísticas privadas a partir de tus repeticiones</p>
                 </div></div>
+                <div class="top-utilities">
+                <div class="monitor-indicator" id="monitor-indicator" data-state="starting" role="status" aria-live="polite">
+                    <span class="monitor-signal" aria-hidden="true"></span>
+                    <div><strong id="monitor-title">Comprobando monitor</strong>
+                    <span class="monitor-details" id="monitor-details">Preparando estado...</span></div>
+                </div>
                 <div class="theme-picker"><label for="theme-select">Estilo</label>
                   <select class="theme-select" id="theme-select" aria-label="Estilo visual">
                     <option value="arena">Arena</option><option value="tactical">Tactical HUD</option>
@@ -680,7 +713,7 @@ public static class Dashboard
                     <option value="carbon">Carbon</option><option value="arcade">Neon Arcade</option>
                     <option value="glacier">Glacier</option><option value="solar">Solar Flare</option>
                     <option value="ember">Ember</option><option value="blueprint">Blueprint</option>
-                  </select></div>
+                  </select></div></div>
             </header>
             <section class="hero">
               <div class="hero-grid">
@@ -776,6 +809,7 @@ public static class Dashboard
             </section>
             <div class="footer">Fortnite ChestTracker · Sin conexión al juego · Sin telemetría · No afiliado a Epic Games</div>
             </main>
+            <script id="monitor-data" type="application/json">{{monitorPayload}}</script>
             <script id="match-data" type="application/json">
             """);
         sb.Append(payload);
