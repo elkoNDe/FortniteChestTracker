@@ -124,6 +124,14 @@
         details = monitorSnapshot.detail;
     }
     document.getElementById("monitor-details").textContent = details;
+    const lastImport = monitorSnapshot?.lastImportedUtc
+      ? Date.parse(monitorSnapshot.lastImportedUtc) : NaN;
+    document.getElementById("monitor-imported").textContent =
+      Number.isFinite(lastImport)
+        ? "Última importación " + new Date(lastImport).toLocaleString("es-ES", {
+            day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+          })
+        : "Sin nuevas partidas en esta sesión";
   }
   renderMonitorStatus();
   setInterval(renderMonitorStatus, 5000);
