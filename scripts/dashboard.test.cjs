@@ -259,3 +259,48 @@ test('Arena, Tactical HUD y Studio Light usan geometria CSS discreta sin glifos'
   assert.match(studio, /radial-gradient\(circle at center/);
   assert.match(studio, /transparent 0 44px, var\(--hero-ornament\) 45px 46px/);
 });
+
+test('v0.4.0: la aplicación usa bandeja de Windows sin consola y mantiene el modo de pruebas', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const project = read('src/FortniteChestTracker/FortniteChestTracker.csproj');
+  const program = read('src/FortniteChestTracker/Program.cs');
+  const tray = read('src/FortniteChestTracker/TrayAppContext.cs');
+  const scanner = read('src/FortniteChestTracker/ReplayScanner.cs');
+  const runner = read('src/FortniteChestTracker/MonitorRunner.cs');
+  assert.match(project, /<OutputType>WinExe<\/OutputType>/);
+  assert.match(project, /<UseWindowsForms>true<\/UseWindowsForms>/);
+  assert.match(project, /<TargetFramework>net10\.0-windows<\/TargetFramework>/);
+  assert.match(program, /\[STAThread\]/);
+  assert.match(program, /Application\.Run\(tray\)/);
+  for (const option of ['--self-test', '--once', '--backfill-squad', '--no-browser', '--headless'])
+    assert.ok(program.includes(option), 'Falta opción de mantenimiento ' + option);
+  for (const item of ['Abrir dashboard', 'Abrir carpeta de datos', 'Ver registro de errores',
+      'Salir de FortniteChestTracker'])
+    assert.ok(tray.includes(item), 'Falta acceso desde la bandeja: ' + item);
+  assert.match(tray, /_notification\.DoubleClick/);
+  assert.match(tray, /await _runner\.StopAsync\(\)/);
+  assert.match(scanner, /public int PendingCount/);
+  assert.match(scanner, /public bool FolderAvailable/);
+  assert.match(scanner, /public Action<string>\? AnalysisStarted/);
+  assert.match(runner, /TimeSpan\.FromSeconds\(6\)/);
+  assert.match(runner, /Dashboard\.Write\(_store\.Snapshot\(\), _dataFolder, Current, exportCsv\)/);
+});
+
+test('v0.4.0: el estado offline queda incorporado en el HTML y detecta el monitor detenido', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const dashboard = read('src/FortniteChestTracker/Dashboard.cs');
+  const client = read('src/FortniteChestTracker/Assets/dashboard.js');
+  assert.match(dashboard, /id="monitor-indicator"/);
+  assert.match(dashboard, /id="monitor-data"/);
+  assert.match(dashboard, /id="monitor-title"/);
+  assert.match(dashboard, /MonitorStatus\? monitor = null/);
+  assert.match(dashboard, /if \(exportCsv\) ExportCsv/);
+  assert.match(client, /Date\.now\(\) - lastCheck > 45000/);
+  assert.match(client, /setInterval\(renderMonitorStatus, 5000\)/);
+  assert.match(client, /box\.dataset\.state = current/);
+  assert.match(client, /Monitor desconectado/);
+});

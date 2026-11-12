@@ -23,6 +23,11 @@ public sealed class ReplayScanner
     private readonly Dictionary<string, string> _lastMessage = new(StringComparer.OrdinalIgnoreCase);
 
     public int PendingCount { get; private set; }
+    public int LastScanFailures { get; private set; }
+    public bool FolderAvailable { get; private set; } = true;
+
+    // Optional observer for the tray/status panel. No gameplay data is changed.
+    public Action<string>? AnalysisStarted { get; set; }
 
     public ReplayScanner(TrackerStore store, string folder, string dataFolder)
         : this(store, folder, dataFolder, file => new ReplayAnalyzer().Analyze(file))
@@ -75,8 +80,11 @@ public sealed class ReplayScanner
     public int Scan(bool once)
     {
         PendingCount = 0;
+        LastScanFailures = 0;
+        FolderAvailable = true;
         if (!Directory.Exists(_folder))
         {
+            FolderAvailable = false;
             // Do not repeat the same warning every six seconds.
             Announce("missing-folder", "Repeticiones",
                 $"No existe la carpeta de replays: {_folder}. Comprueba que Fortnite graba repeticiones.");
@@ -93,6 +101,7 @@ public sealed class ReplayScanner
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            FolderAvailable = false;
             Announce("listing-error", "Repeticiones",
                 $"No se pueden listar las repeticiones: {ex.Message}");
             return 0;
@@ -141,6 +150,7 @@ public sealed class ReplayScanner
             _lastMessage.Remove(fingerprint);
             try
             {
+                AnalysisStarted?.Invoke(info.Name);
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Partida finalizada: analizando {info.Name} " +
                     $"({info.Length / 1024.0 / 1024.0:N1} MB)...");
                 var match = _analyze(file);
@@ -165,6 +175,7 @@ public sealed class ReplayScanner
             }
             catch (Exception ex)
             {
+                LastScanFailures++;
                 LogError(info.Name, ex);
                 _failed[fingerprint] = DateTime.UtcNow;
                 PendingCount++;

@@ -1,106 +1,130 @@
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
 namespace FortniteChestTracker;
 
 public static class Program
 {
-    public static async Task<int> Main(string[] args)
+    // The GUI subsystem prevents a console window from flashing on double-click.
+    // CLI maintenance commands remain available through --once / --self-test.
+    [STAThread]
+    public static int Main(string[] args)
     {
-        if (args.Contains("--help") || args.Contains("-h"))
+        var help = args.Contains("--help") || args.Contains("-h");
+        var cli = help || args.Contains("--self-test") ||
+            args.Contains("--once") || args.Contains("--backfill-squad") ||
+            args.Contains("--console") || args.Contains("--headless");
+        if (cli) AttachParentConsole();
+
+        if (help)
         {
-            Console.WriteLine("Fortnite ChestTracker: --once | --watch | --backfill-squad | --self-test | --demos <ruta> | --data <ruta> | --no-browser");
+            Console.WriteLine("Fortnite ChestTracker: --once | --watch | --backfill-squad | --self-test | --demos <ruta> | --data <ruta> | --no-browser | --console | --headless");
             return 0;
         }
         if (args.Contains("--self-test")) return SelfTest.Run();
 
-        static string? Option(string[] args, string name)
+        static string? Option(string[] arguments, string name)
         {
-            var index = Array.IndexOf(args, name);
+            var index = Array.IndexOf(arguments, name);
             if (index < 0) return null;
-            if (index + 1 >= args.Length) throw new ArgumentException($"Falta un valor para {name}");
-            return args[index + 1];
+            if (index + 1 >= arguments.Length)
+                throw new ArgumentException($"Falta un valor para {name}");
+            return arguments[index + 1];
         }
+
         string demos, data;
         try
         {
             demos = Option(args, "--demos") ?? Paths.DefaultDemos;
             data = Option(args, "--data") ?? Paths.DefaultData;
         }
-        catch (ArgumentException e) { Console.Error.WriteLine(e.Message); return 2; }
+        catch (ArgumentException e)
+        {
+            Console.Error.WriteLine(e.Message);
+            return 2;
+        }
+
         try
         {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Console.WriteLine("FORTNITE CHESTTRACKER — Solo archivos .replay, nunca el proceso del juego");
-        Console.WriteLine($"Repeticiones: {demos}");
-        Console.WriteLine($"Datos locales: {data}");
-        Console.WriteLine("Activa las repeticiones en Fortnite: Ajustes > Juego > Repeticiones.\n");
+            if (cli)
+            {
+                try { Console.OutputEncoding = Encoding.UTF8; }
+                catch (IOException) { /* WinExe started without an attached terminal. */ }
+            }
+            Console.WriteLine("FORTNITE CHESTTRACKER - Solo repeticiones .replay, sin tocar Fortnite");
+            Console.WriteLine($"Repeticiones: {demos}");
+            Console.WriteLine($"Datos locales: {data}");
 
-            using var mutex = new Mutex(initiallyOwned: true, name: "FortniteChestTracker-Local-SingleInstance", out var created);
+            using var mutex = new Mutex(initiallyOwned: true,
+                name: "FortniteChestTracker-Local-SingleInstance", out var created);
             if (!created)
             {
-                Console.Error.WriteLine("El tracker ya está abierto en otra ventana.");
+                // The existing tray owns the monitor. Launching a second EXE
+                // simply opens its dashboard rather than creating another scanner.
                 var existingReport = Path.Combine(data, "dashboard.html");
-                if (File.Exists(existingReport) && !args.Contains("--no-browser")) Dashboard.OpenBrowser(existingReport);
+                if (File.Exists(existingReport) && !args.Contains("--no-browser"))
+                    Dashboard.OpenBrowser(existingReport);
                 return 0;
             }
+
             var store = new TrackerStore(data);
             var recovered = store.BackfillDurations(demos);
             if (recovered > 0)
                 Console.WriteLine($"Duración recuperada de {recovered} partidas antiguas.");
             var scanner = new ReplayScanner(store, demos, data);
-            var report = Dashboard.Write(store.Snapshot(), data);
-            if (!args.Contains("--no-browser")) Dashboard.OpenBrowser(report);
+            var report = Dashboard.Write(store.Snapshot(), data, MonitorStatus.Starting());
+            if (!args.Contains("--no-browser"))
+                Dashboard.OpenBrowser(report);
+
             if (args.Contains("--backfill-squad"))
             {
-                // Explicit rather than automatic: re-reading up to ~100 historic
-                // replays can consume CPU while Fortnite is running.
                 scanner.Scan(once: true);
                 scanner.BackfillSquads();
-                Dashboard.Write(store.Snapshot(), data);
+                Dashboard.Write(store.Snapshot(), data,
+                    new MonitorStatus("stopped", DateTimeOffset.UtcNow, 0));
                 Console.WriteLine("Histórico de escuadra actualizado: " + report);
                 return 0;
             }
             if (args.Contains("--once"))
             {
                 scanner.Scan(once: true);
-                Dashboard.Write(store.Snapshot(), data);
+                Dashboard.Write(store.Snapshot(), data,
+                    new MonitorStatus("stopped", DateTimeOffset.UtcNow, 0));
                 Console.WriteLine("Análisis terminado. Informe: " + report);
                 return 0;
             }
 
-            Console.WriteLine("Vigilando nuevas partidas cada 6 segundos. Los cofres se cuentan al terminar " +
-                "y guardar la repetición; no mientras juegas. Ctrl+C para salir.");
-            using var cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
-            using var timer = new PeriodicTimer(TimeSpan.FromSeconds(6));
-            scanner.Scan(once: false);
-            Dashboard.Write(store.Snapshot(), data);
-            var lastHeartbeat = DateTime.UtcNow;
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Monitor activo. " +
-                $"Repeticiones pendientes: {scanner.PendingCount}.");
-            try
-            {
-                while (await timer.WaitForNextTickAsync(cts.Token))
-                {
-                    var added = scanner.Scan(once: false);
-                    if (added > 0)
-                    {
-                        var snapshot = store.Snapshot();
-                        Dashboard.Write(snapshot, data);
-                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Informe actualizado: " +
-                            $"{snapshot.Chests} cofres en {snapshot.Matches.Count} partidas.");
-                    }
+            using var runner = new MonitorRunner(store, scanner, data);
+            runner.Start();
 
-                    if (DateTime.UtcNow - lastHeartbeat >= TimeSpan.FromMinutes(1))
-                    {
-                        lastHeartbeat = DateTime.UtcNow;
-                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Monitor activo. " +
-                            $"Repeticiones pendientes: {scanner.PendingCount}. " +
-                            "El navegador se actualiza cada 20 segundos.");
-                    }
+            // Headless is explicit for CI and terminal diagnostics; normal
+            // launches run only the notification-area icon, never a console.
+            if (args.Contains("--headless") || args.Contains("--console"))
+            {
+                using var stopping = new CancellationTokenSource();
+                Console.CancelKeyPress += (_, eventArgs) =>
+                {
+                    eventArgs.Cancel = true;
+                    stopping.Cancel();
+                };
+                try
+                {
+                    Task.Delay(Timeout.InfiniteTimeSpan, stopping.Token)
+                        .GetAwaiter().GetResult();
                 }
+                catch (OperationCanceledException) when (stopping.IsCancellationRequested) { }
+                runner.StopAsync().GetAwaiter().GetResult();
+                return 0;
             }
-            catch (OperationCanceledException) when (cts.IsCancellationRequested) { }
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            using (var tray = new TrayAppContext(runner, data))
+                Application.Run(tray);
+
+            // Also handle Windows logoff/shutdown, not just "Salir" from the menu.
+            runner.StopAsync().GetAwaiter().GetResult();
             return 0;
         }
         catch (Exception e)
@@ -109,6 +133,28 @@ public static class Program
             return 1;
         }
     }
+
+    private const uint AttachParentProcess = uint.MaxValue;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool AttachConsole(uint processId);
+
+    private static void AttachParentConsole()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        try
+        {
+            if (AttachConsole(AttachParentProcess))
+            {
+                Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), new UTF8Encoding(false))
+                    { AutoFlush = true });
+                Console.SetError(new StreamWriter(Console.OpenStandardError(), new UTF8Encoding(false))
+                    { AutoFlush = true });
+            }
+        }
+        catch (Exception) { /* A redirected or unavailable console is optional. */ }
+    }
+
     private static void ReportStartupError(Exception error, string dataFolder)
     {
         var log = Path.Combine(dataFolder, "startup-errors.log");
