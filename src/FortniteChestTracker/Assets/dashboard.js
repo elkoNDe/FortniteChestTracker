@@ -109,6 +109,25 @@
   } catch (_) { /* file:// origins may disallow sessionStorage */ }
 
   const $ = id => document.getElementById(id);
+  const themes = ["arena", "tactical", "studio", "prism"];
+  const themeSelect = $("theme-select");
+  const THEME_KEY = "fortnite-chesttracker-theme";
+  // A theme is a visual preference, independent of the session's chart/filter state.
+  // localStorage can be unavailable on some file:// origins.
+  let theme = "arena";
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (themes.includes(stored)) theme = stored;
+  } catch (_) { /* Retain the default theme when localStorage is blocked. */ }
+  function applyTheme(nextTheme) {
+    if (!themes.includes(nextTheme)) return;
+    theme = nextTheme;
+    document.documentElement.dataset.theme = theme;
+    themeSelect.value = theme;
+    try { localStorage.setItem(THEME_KEY, theme); } catch (_) { }
+  }
+  applyTheme(theme);
+  themeSelect.addEventListener("change", event => applyTheme(event.target.value));
   const modeButtons = Array.from(document.querySelectorAll("[data-unit]"));
   const legendButtons = Array.from(document.querySelectorAll("[data-series]"));
   const historyBody = $("history-body");
