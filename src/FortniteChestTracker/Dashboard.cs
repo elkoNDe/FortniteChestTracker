@@ -704,7 +704,8 @@ public static class Dashboard
                 <div class="monitor-indicator" id="monitor-indicator" data-state="starting" role="status" aria-live="polite">
                     <span class="monitor-signal" aria-hidden="true"></span>
                     <div><strong id="monitor-title">Comprobando monitor</strong>
-                    <span class="monitor-details" id="monitor-details">Preparando estado...</span></div>
+                    <span class="monitor-details" id="monitor-details">Preparando estado...</span>
+                    <span class="monitor-details" id="monitor-imported">Sin importaciones recientes</span></div>
                 </div>
                 <div class="theme-picker"><label for="theme-select">Estilo</label>
                   <select class="theme-select" id="theme-select" aria-label="Estilo visual">
