@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.3.9: align all decorations, fix Studio Light contrast and remove Arena cut.
+# v0.3.10: replace three distracting glyphs with restrained CSS geometry.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -86,9 +86,10 @@ jobs:
           - Diez estilos visuales seleccionables: Arena, Tactical HUD, Studio Light, Prism,
             Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint.
           - Adornos de los diez estilos unificados en escala y posición.
+          - Arena con dos franjas diagonales sutiles, Tactical HUD con retícula de esquinas
+            y Studio Light con doble aro fino, sin símbolos de texto grandes.
           - Carbon conserva su motivo centrado en la zona Party.
-          - Corregido el contraste de Studio Light y el texto heredado en Glacier.
-          - Arena sin recorte diagonal en el panel principal.
+          - Contraste legible en Studio Light y Glacier; Arena sin recorte diagonal.
           - Tema recordado en el navegador e icono original del EXE en la cabecera.
           - Cabecera simplificada sin el aviso de actualización.
           - Solo Battle Royale Cero construcción (Solo/Duo/Trio/Squad).
