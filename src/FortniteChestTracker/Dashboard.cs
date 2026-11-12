@@ -170,6 +170,31 @@ public static class Dashboard
             .period-metric .party-count { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #30415f; color: #9fc8ff; font-size: 13px; flex-wrap: wrap; }
             .period-metric .party-count strong { color: #bbd9ff; font-size: 18px; }
             .panel { margin-top: 20px; }
+            /* Compact probability card follows each theme's own palette. */
+            .ticket-card { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr);
+                gap:20px; align-items:center; margin-bottom:20px; padding:20px 23px;
+                border-radius:var(--radius,18px); border:1px solid var(--line,#283854);
+                color:var(--text,#f5f6ff);
+                background:linear-gradient(125deg,var(--surface,#111b30),var(--page,#090e1c)); }
+            .ticket-heading { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+            .ticket-mark { display:grid; place-items:center; width:27px; height:27px;
+                border-radius:8px; color:var(--accent,#ffb25f);
+                border:1px solid var(--line,#283854); font-size:18px; }
+            .ticket-heading h2 { font-size:17px; }
+            .ticket-value { color:var(--accent,#ffb25f); font-size:clamp(28px,4vw,39px);
+                font-weight:800; letter-spacing:-1px; line-height:1.2; }
+            .ticket-note { color:var(--muted,#99a8c3); font-size:12px; line-height:1.55; }
+            .ticket-details { border-left:1px solid var(--line,#283854); padding-left:20px;
+                display:grid; gap:10px; }
+            .ticket-details strong { font-weight:700; color:var(--text,#f5f6ff); }
+            .ticket-small { font-size:12px; color:var(--muted,#99a8c3); line-height:1.55; }
+            .ticket-small b { color:var(--text,#f5f6ff); }
+            html[data-theme="ember"] .ticket-card {
+                background:radial-gradient(ellipse at 8% 10%,#f18a3420,transparent 55%),
+                    linear-gradient(130deg,var(--surface),var(--page)); }
+            @media (max-width: 760px) { .ticket-card { grid-template-columns:1fr; }
+                .ticket-details { border-left:0; border-top:1px solid var(--line,#283854);
+                    padding:13px 0 0; } }
             h2 { font-size: 19px; letter-spacing: -.3px; margin: 0; }
             .toolbar { justify-content: flex-start; }
             .control { background: #101a2e; color: #dce6f9; border: 1px solid #3c4d68; border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 13px; }
