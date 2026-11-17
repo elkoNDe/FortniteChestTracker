@@ -398,7 +398,7 @@ public static class SelfTest
                 "cofres, destruidos y munición atribuibles a compañera");
             Check(mates.Single(m => m.PlayerName == "Compañero").Chests == 0 &&
                 mates.Single(m => m.PlayerName == "Sin relacion Pawn").Chests == null,
-                "cero cofres observados distinto de datos desconocidos");
+                "cero cofres distinto de datos desconocidos");
             Check(SquadAttribution.DetectTeammates(
                 ownerCandidate with { TeamIndex = null }, roster,
                 pawnToState, stateToPlayer, observations).Count == 0,
