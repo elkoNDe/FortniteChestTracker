@@ -117,6 +117,10 @@ try {
   assert.doesNotMatch(html, /Solo Cero construcción BR/,
     "El hero no debe incluir la coletilla del modo.");
   assert.match(html, /Cofres de party/, "Falta el total de cofres de la party.");
+  assert.match(html, /<div class="hero-primary">\s*<p class="eyebrow">Tus cofres<\/p>\s*<div class="total">\s*[\d.,]+\s*<\/div>/,
+    "El total de Tus cofres debe mostrar sólo el número.");
+  assert.doesNotMatch(html, /class="squad-note"|class="hint"|Tu histórico se conserva en SQLite\.|<span> cofres<\/span>/,
+    "La cabecera todavía incluye alguno de los subtítulos eliminados.");
   assert.match(html, /class="squad-total">\s*[\d.,]+\s*<\/div>/,
     "No se representa el total de cofres de la escuadra.");
   assert.match(history[1], /Amiga de escuadra/,
