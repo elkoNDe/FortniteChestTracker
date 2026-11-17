@@ -824,9 +824,9 @@ public static class Dashboard
             """);
         sb.Append("""
             <section class="period-metrics" aria-label="Estadísticas recientes">
-              <article class="period-metric"><div class="label">Hoy</div><div class="num" id="today-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="today-party">—</strong><span>cofres observados</span></div><div class="small" id="today-games"></div></article>
-              <article class="period-metric"><div class="label">Esta semana · lunes a domingo</div><div class="num" id="week-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="week-party">—</strong><span>cofres observados</span></div><div class="small" id="week-games"></div></article>
-              <article class="period-metric"><div class="label">Este mes</div><div class="num" id="month-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="month-party">—</strong><span>cofres observados</span></div><div class="small" id="month-games"></div></article>
+              <article class="period-metric"><div class="label">Hoy</div><div class="num" id="today-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="today-party">—</strong><span>cofres</span></div><div class="small" id="today-games"></div></article>
+              <article class="period-metric"><div class="label">Esta semana · lunes a domingo</div><div class="num" id="week-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="week-party">—</strong><span>cofres</span></div><div class="small" id="week-games"></div></article>
+              <article class="period-metric"><div class="label">Este mes</div><div class="num" id="month-chests">—</div><div class="small">Tus cofres</div><div class="party-count">Party <strong id="month-party">—</strong><span>cofres</span></div><div class="small" id="month-games"></div></article>
             </section>
             <section class="panel" aria-label="Cofres por periodo">
               <div class="section-head">
