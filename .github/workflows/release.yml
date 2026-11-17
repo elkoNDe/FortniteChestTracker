@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.4.4: add final period after 'contando los tuyos' in ticket party text.
+# v0.4.5: remove unneeded 'observado' wording from dashboard.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -92,8 +92,11 @@ jobs:
           - Los siguientes sábados se muestran explícitamente como previsiones x1,5;
             estos horarios pueden cambiar si Epic anuncia novedades.
           - Probabilidad secundaria de Party y etiqueta «Próxima Treasure Hour».
-          - El resumen de cofres de party muestra solo «Total», sin texto adicional.
-          - La tarjeta del ticket añade el punto final a «contando los tuyos.».
+          - Panel simplificado: los cofres de Party se presentan sin calificativos,
+            tanto en tarjetas como en gráficas e historial.
+          - Se conservan los cálculos actuales de medias, munición y cofres.
+          - El resumen de cofres de party muestra solo «Total» y el texto
+            «contando los tuyos.» mantiene su punto final.
           - Cada cofre es independiente: nunca se garantiza conseguir el ticket.
           - Se mantienen el icono de bandeja sin consola, el estado del monitor, los
             diez estilos y todos los filtros/historiales. Los datos son locales.
