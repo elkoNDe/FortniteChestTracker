@@ -139,12 +139,11 @@ public static class Dashboard
             h1 { font-size: 24px; letter-spacing: -.6px; margin: 0; }
             .subtitle, .secondary { color: #99a8c3; font-size: 13px; margin: 6px 0 0; }
             .pill { border: 1px solid #314569; background: #13213b; color: #a0f3d2; padding: 9px 13px; border-radius: 99px; font-size: 12px; }
-            .hero { background: linear-gradient(110deg, #283b81, #18254a 55%, #141f39); border: 1px solid #435a9b; border-radius: 23px; padding: 30px; margin-bottom: 18px; position: relative; overflow: hidden; }
-            .hero-grid { display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; position: relative; z-index: 1; }
+            .hero { background: linear-gradient(110deg, #283b81, #18254a 55%, #141f39); border: 1px solid #435a9b; border-radius: 23px; padding: 20px 26px; margin-bottom: 18px; position: relative; overflow: hidden; }
+            .hero-grid { display: flex; align-items: center; justify-content: space-between; gap: 22px; flex-wrap: wrap; position: relative; z-index: 1; }
             .hero-primary { flex: 1 1 280px; }
-            .hero-squad { flex: 0 1 290px; border-left: 1px solid #6074ab77; padding: 15px 0 15px 27px; }
-            .squad-total { font-size: 44px; font-weight: 750; letter-spacing: -1px; line-height: 1.12; color: #cde0ff; }
-            .squad-note { color: #b1c5e4; font-size: 12px; margin: 9px 0 0; max-width: 280px; line-height: 1.5; }
+            .hero-squad { flex: 0 1 290px; border-left: 1px solid #6074ab77; padding: 0 0 0 24px; }
+            .squad-total { font-size: 42px; font-weight: 750; letter-spacing: -1px; line-height: 1.12; color: #cde0ff; }
             /* One placement/size system for all ten decorative motifs.
                The motif stays behind the numbers and never captures input. */
             .hero::after {
@@ -156,10 +155,8 @@ public static class Dashboard
                 color: var(--hero-ornament, #ffffff16);
                 pointer-events: none; z-index: 0;
             }
-            .eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #d2d8fa; margin: 0 0 8px; }
-            .total { font-size: 72px; letter-spacing: -3px; line-height: 1.05; font-weight: 800; color: #ffda7b; position: relative; z-index: 1; }
-            .total span { font-size: 20px; color: #d8e1ff; letter-spacing: 0; font-weight: 500; }
-            .hint { font-size: 13px; color: #bec9e8; margin-top: 10px; }
+            .eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #d2d8fa; margin: 0 0 6px; }
+            .total { font-size: 64px; letter-spacing: -3px; line-height: 1.05; font-weight: 800; color: #ffda7b; position: relative; z-index: 1; }
             .metrics, .period-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin-bottom: 20px; }
             .period-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .metric, .panel, .period-metric { border: 1px solid #283854; background: #111b30; border-radius: 18px; padding: 20px; }
@@ -374,7 +371,6 @@ public static class Dashboard
             .hero-squad { border-color: var(--hero-line); }
             .eyebrow { color: var(--hero-label); }
             .squad-total, .period-metric .party-count strong { color: var(--team); }
-            .squad-note, .hint, .total span { color: var(--hero-note); }
             .metric, .panel, .period-metric { background: var(--surface);
                 border-color: var(--line); border-radius: var(--radius); }
             .period-metric .party-count { border-color: var(--line); color: var(--muted); }
@@ -506,7 +502,7 @@ public static class Dashboard
             html[data-theme="studio"] .shell { max-width: 1260px; }
             html[data-theme="studio"] .hero {
                 background: linear-gradient(110deg, #fff7ed 0%, #fffdfa 72%, #f6ebdb);
-                border: 1px solid #e9d8c4; padding-top: 38px; padding-bottom: 38px;
+                border: 1px solid #e9d8c4; padding-top: 24px; padding-bottom: 24px;
             }
             /* Studio Light: delicate concentric rules, like an editorial seal. */
             html[data-theme="studio"] .hero::after {
@@ -712,8 +708,8 @@ public static class Dashboard
             [hidden] { display: none !important; }
             @media (max-width: 760px) {
                 .shell { padding: 20px 14px 50px; }
-                .hero { padding: 24px; } .total { font-size: 55px; }
-                .hero-squad { border-left: 0; border-top: 1px solid #6074ab77; padding: 17px 0 0; flex-basis: 100%; }
+                .hero { padding: 20px; } .total { font-size: 55px; }
+                .hero-squad { border-left: 0; border-top: 1px solid #6074ab77; padding: 14px 0 0; flex-basis: 100%; }
                 .squad-total { font-size: 34px; }
                 .metrics, .period-metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
                 .metric, .period-metric, .panel { padding: 16px; }
@@ -749,7 +745,7 @@ public static class Dashboard
             """);
         sb.Append(data.Chests.ToString("N0", CultureInfo.GetCultureInfo("es-ES")));
         sb.Append("""
-                  <span> cofres</span></div>
+                  </div>
                 </div>
                 <div class="hero-squad">
                   <p class="eyebrow">Cofres de party</p>
@@ -758,10 +754,8 @@ public static class Dashboard
         sb.Append(data.SquadChests.ToString("N0", CultureInfo.GetCultureInfo("es-ES")));
         sb.Append("""
                   </div>
-                  <p class="squad-note">Total</p>
                 </div>
               </div>
-              <div class="hint">Tu histórico se conserva en SQLite.</div>
             </section>
             """);
         void Metric(string label, string value, string note)

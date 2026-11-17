@@ -343,12 +343,19 @@ test('La tarjeta del ticket usa los rótulos compactos solicitados', () => {
   assert.match(dashboard, /Cada cofre es independiente: no existe progreso garantizado/);
 });
 
-test('El resumen de cofres de party muestra solo Total', () => {
+test('Cabecera más compacta: sólo títulos y contadores, sin subtítulos redundantes', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const dashboard = fs.readFileSync(path.join(__dirname,
     '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
-  assert.match(dashboard, /<p class="squad-note">Total<\/p>/);
+  assert.match(dashboard, /<p class="eyebrow">Tus cofres<\/p>/);
+  assert.match(dashboard, /<p class="eyebrow">Cofres de party<\/p>/);
+  assert.match(dashboard, /sb.Append\(data.Chests.ToString\("N0"/);
+  assert.match(dashboard, /sb.Append\(data.SquadChests.ToString\("N0"/);
+  assert.doesNotMatch(dashboard, /<span> cofres<\/span>|class="squad-note"|Tu histórico se conserva en SQLite\.|class="hint"/);
+  assert.match(dashboard, /\.hero \{[^}]*padding: 20px 26px;/);
+  assert.match(dashboard, /html\[data-theme="studio"\] \.hero \{[^}]*padding-top: 24px; padding-bottom: 24px;/);
+  assert.ok(dashboard.includes(".hero { padding: 20px; } .total { font-size: 55px; }"));
 });
 
 test('La estimación de Party del ticket termina con punto', () => {
