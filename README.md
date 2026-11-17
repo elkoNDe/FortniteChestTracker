@@ -1,14 +1,14 @@
 # Fortnite ChestTracker
 
 [![Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml/badge.svg)](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml)
-![Version](https://img.shields.io/badge/version-0.4.4-blue)
+![Version](https://img.shields.io/badge/version-0.4.5-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres observados del equipo y un historial con gráficas en el navegador.
+**Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
-> **Estado: v0.4.4.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
+> **Estado: v0.4.5.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
 
 ## Qué hace
 
@@ -16,11 +16,11 @@ No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de E
 - **Estado real del monitor:** el dashboard indica si está activo, analizando, esperando una repetición, en error o desconectado; muestra la última comprobación, pendientes y la última importación de esta sesión. Se actualiza localmente y detecta un proceso detenido por antigüedad de la última señal (45 s). No necesita servidor ni conexión a Internet.
 - **Ticket dorado (Pirate Shop Access):** tarjeta compacta con la probabilidad teórica acumulada de obtener al menos un ticket a partir de los cofres registrados desde el **1 de noviembre de 2026**. Incluye cofres abiertos y **destruidos**. Cada intento conserva una probabilidad independiente: **no es una barra de progreso ni un premio garantizado**. Tasa base anunciada por Epic: **1 entre 137.500** por cofre.
 - **Horas del Tesoro:** se aplica automáticamente el bono a la hora de cada cofre usando los segundos de los eventos almacenados en SQLite (incluye partidas que cruzan un cambio horario). El 7/11, 19:00–21:00 UTC se aplica ×1,5 y el 8/11, 02:00–04:00 UTC se aplica ×2 (sesiones históricas confirmadas). Las franjas siguientes de los sábados 14, 21 y 28 de noviembre y 5 de diciembre, a 19:00–21:00 UTC y 02:00–04:00 UTC del domingo, se incluyen **solo como previsiones ×1,5**, no como horarios/multiplicadores definitivamente confirmados. El código puede actualizarse fácilmente en `src/FortniteChestTracker/TicketOdds.cs` si Epic anuncia cambios. **No hay sincronización por Internet**.
-- **Estimación de party:** presenta un cálculo secundario para los cofres observados del equipo; los datos de compañeros pueden ser incompletos y sus aperturas se aproximan a la hora de inicio de la partida. Las partidas antiguas sin segundos de evento conservan los totales, pero aproximan su hora de apertura.
-- **Estadísticas por periodos:** Hoy, Esta semana, Este mes, gráfica diaria/mensual y filtros del historial muestran tanto tus cofres como los observados de la party (incluidos los tuyos). Puedes pulsar «Tú» o «Party» en la leyenda para ocultar o mostrar sus barras; la elección se conserva al actualizar el panel.
+- **Estimación de party:** presenta un cálculo secundario para los cofres del equipo; los datos de compañeros pueden ser incompletos y sus aperturas se aproximan a la hora de inicio de la partida. Las partidas antiguas sin segundos de evento conservan los totales, pero aproximan su hora de apertura.
+- **Estadísticas por periodos:** Hoy, Esta semana, Este mes, gráfica diaria/mensual y filtros del historial muestran tanto tus cofres como los de la party (incluidos los tuyos). Puedes pulsar «Tú» o «Party» en la leyenda para ocultar o mostrar sus barras; la elección se conserva al actualizar el panel.
 - **Aspecto personalizable:** diez estilos (Arena, Tactical HUD, Studio Light, Prism, Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint), selector directo en el panel y preferencia guardada en el navegador. Arena, Tactical HUD, Studio Light y Prism ahora tienen tratamientos visuales propios. Los adornos de los diez temas comparten escala y alineación; Carbon mantiene su adorno centrado en Party. Arena utiliza dos franjas diagonales discretas, Tactical HUD una retícula de esquinas y Studio Light un doble aro fino; se conserva la posición común de todos los adornos. Studio Light tiene contraste corregido y Arena no tiene el recorte diagonal del panel principal. El título utiliza el mismo icono que el ejecutable.
 - **Tus cofres:** aperturas, destruidos, récord, media, estadísticas diarias y mensuales.
-- **Cofres de party:** suma tus cofres una sola vez y añade los cofres *observados y atribuibles* al resto de tu equipo.
+- **Cofres de party:** suma tus cofres una sola vez y añade los cofres *registrados y atribuibles* al resto de tu equipo.
 - **Historial:** fecha de inicio y de fin en dos líneas de una misma columna Fecha, duración grabada, filtros por fechas y posición final cuando está disponible. Paginación de 10 en 10 (10–100 partidas por página).
 - **Detección automática:** revisa las repeticiones cada 6 segundos y procesa las partidas al terminar su grabación.
 - **Panel HTML local:** `dashboard.html` se actualiza cada 20 segundos y permite examinar las gráficas por periodos.
@@ -39,7 +39,7 @@ Los demás modos quedan fuera de las estadísticas, las gráficas, el historial 
 
 **Duración de la partida:** representa la duración **grabada en el replay**, que puede incluir tiempo en modo espectador o acabar antes de que termine la partida para el resto del equipo. La fecha fin se calcula a partir del inicio más esa duración. La aplicación intenta recuperar automáticamente la duración de partidas antiguas mientras sus archivos `.replay` sigan disponibles. En otros casos muestra «—» sin inventar una hora.
 
-**Nota sobre la party:** el programa identifica el equipo de la partida a partir de `TeamIndex`; no puede comprobar si los jugadores pertenecían a tu grupo de amigos del lobby. Un «—» significa que faltan datos para atribuir aperturas, **no cero cofres**. Por ello, el total del equipo es un mínimo observado.
+**Nota sobre la party:** el programa identifica el equipo de la partida a partir de `TeamIndex`; no puede comprobar si los jugadores pertenecían a tu grupo de amigos del lobby. Un «—» significa que faltan datos para atribuir aperturas, **no cero cofres**. Por ello, el total del equipo es la suma de los cofres atribuidos a los jugadores.
 
 Fuente de probabilidades: [soporte oficial de Epic Games](https://www.epicgames.com/help/c-34254770/c-33726977/what-are-the-drop-rates-of-treasure-in-chests-in-fortnite-battle-royale-s-pirate-treasure-event-a14361627). Las sesiones confirmadas y previstas se han separado para evitar presentar predicciones como anuncios oficiales.
 
@@ -114,14 +114,14 @@ La compilación descarga código fuente del lector abierto [LED-N/Fortnite-Chest
 | Archivo | Función |
 | --- | --- |
 | `ReplayProbe.cs` / `ReplayAnalyzer.cs` | Leer cabeceras y detectar eventos del replay |
-| `SquadAttribution.cs` | Atribuir cofres observados a jugadores del equipo |
+| `SquadAttribution.cs` | Atribuir cofres a jugadores del equipo |
 | `ReplayScanner.cs` | Vigilar archivos, esperar a que terminen y reintentar |
 | `TrackerStore.cs` | SQLite, deduplicación y migraciones |
 | `Dashboard.cs` / `Assets/dashboard.js` | Panel HTML interactivo y CSV |
 | `SelfTest.cs` / `scripts/*.cjs` | Pruebas de lógica y navegador |
 | `.github/workflows/build.yml` | Validación y creación de artefactos de Windows |
 
-Para informar de un error, [abre un issue](https://github.com/elkoNDe/FortniteChestTracker/issues) con la versión del juego, el modo y el resultado esperado/observado. Evita adjuntar replays con datos personales sin revisarlos.
+Para informar de un error, [abre un issue](https://github.com/elkoNDe/FortniteChestTracker/issues) con la versión del juego, el modo y el resultado esperado y el obtenido. Evita adjuntar replays con datos personales sin revisarlos.
 
 ## Desarrollo con ayuda de IA
 

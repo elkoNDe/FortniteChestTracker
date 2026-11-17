@@ -11,7 +11,7 @@
 - [x] Panel HTML con gráficas, filtros, posición final y paginación
 - [x] Fecha de fin y duración del replay; recuperación desde replays históricos disponibles
 - [x] Paginación de 10 a 100 partidas en incrementos de 10
-- [x] Totales observados de party por periodo y filtros, y Fecha unificada con inicio/fin
+- [x] Totales de party por periodo y filtros, y Fecha unificada con inicio/fin
 - [x] Leyenda interactiva para mostrar u ocultar las series Tú y Party
 - [x] Compilación y pruebas automáticas en Windows con GitHub Actions
 - [x] Distribución autónoma en EXE y variante portable
