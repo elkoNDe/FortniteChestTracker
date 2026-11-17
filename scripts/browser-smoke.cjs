@@ -79,7 +79,7 @@ try {
   assert.match(html, /id="month-chests">[0-9]/, "El script no actualiza los cofres mensuales.");
   for (const period of ["today", "week", "month"]) {
     assert.match(html, new RegExp('id="' + period + '-party">[0-9]'),
-      "No se muestra el total observado de party para " + period);
+      "No se muestra el total de party para " + period);
   }
   assert.match(html, /id="period-party">Party: [0-9]/, "El gráfico no totaliza la party.");
   assert.match(html, /id="history-party">Party: [0-9]/, "El filtro no totaliza la party.");
@@ -118,7 +118,7 @@ try {
     "El hero no debe incluir la coletilla del modo.");
   assert.match(html, /Cofres de party/, "Falta el total de cofres de la party.");
   assert.match(html, /class="squad-total">\s*[\d.,]+\s*<\/div>/,
-    "No se representa el total de cofres observados de la escuadra.");
+    "No se representa el total de cofres de la escuadra.");
   assert.match(history[1], /Amiga de escuadra/,
     "Falta el nombre de la compañera.");
   assert.ok(history[1].includes('class="unobserved">—</td>'),
