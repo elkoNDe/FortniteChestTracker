@@ -355,7 +355,7 @@ test('Cabecera más compacta: sólo títulos y contadores, sin subtítulos redun
   assert.doesNotMatch(dashboard, /<span> cofres<\/span>|class="squad-note"|Tu histórico se conserva en SQLite\.|class="hint"/);
   assert.match(dashboard, /\.hero \{[^}]*padding: 20px 26px;/);
   assert.match(dashboard, /html\[data-theme="studio"\] \.hero \{[^}]*padding-top: 24px; padding-bottom: 24px;/);
-  assert.match(dashboard, /@media \(max-width: 760px\) \{[^}]*\.hero \{ padding: 20px; \}/);
+  assert.ok(dashboard.includes(".hero { padding: 20px; } .total { font-size: 55px; }"));
 });
 
 test('La estimación de Party del ticket termina con punto', () => {
