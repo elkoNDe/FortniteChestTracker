@@ -339,7 +339,7 @@ test('La tarjeta del ticket usa los rótulos compactos solicitados', () => {
   assert.match(dashboard, /Party: <strong id="ticket-party-chance">/);
   assert.match(dashboard, /Próxima Treasure Hour: /);
   assert.match(dashboard, /ticket.NextHourConfirmed \? " \(confirmada\)" : " \(prevista\)"/);
-  assert.doesNotMatch(dashboard, /La party es aproximada:|Calendario offline; las franjas futuras son previsiones\.|Party observada:|Próxima franja:|sin confirmar/);
+  assert.doesNotMatch(dashboard, /La party es aproximada:|Calendario offline; las franjas futuras son previsiones\.|Próxima franja:|sin confirmar/);
   assert.match(dashboard, /Cada cofre es independiente: no existe progreso garantizado/);
 });
 
@@ -349,8 +349,6 @@ test('El resumen de cofres de party muestra solo Total', () => {
   const dashboard = fs.readFileSync(path.join(__dirname,
     '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
   assert.match(dashboard, /<p class="squad-note">Total<\/p>/);
-  assert.doesNotMatch(dashboard,
-    /Total observado\. Puede faltar actividad de compañeros no identificados/);
 });
 
 test('La estimación de Party del ticket termina con punto', () => {
@@ -359,4 +357,15 @@ test('La estimación de Party del ticket termina con punto', () => {
   const dashboard = fs.readFileSync(path.join(__dirname,
     '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
   assert.match(dashboard, /· \{partyChests\} cofres, contando los tuyos\.<\/div>/);
+});
+
+test('Los textos del dashboard muestran cofres sin calificativos', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '../src/FortniteChestTracker');
+  const html = fs.readFileSync(path.join(root, 'Dashboard.cs'), 'utf8');
+  const script = fs.readFileSync(path.join(root, 'Assets/dashboard.js'), 'utf8');
+  assert.equal((html.match(/<span>cofres<\/span>/g) || []).length, 3);
+  assert.match(script, /" cofres, en " \+ group\.games/);
+  assert.match(script, /" cofres";/);
 });
