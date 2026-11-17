@@ -1,14 +1,14 @@
 # Fortnite ChestTracker
 
 [![Build and test Windows](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml/badge.svg)](https://github.com/elkoNDe/FortniteChestTracker/actions/workflows/build.yml)
-![Version](https://img.shields.io/badge/version-0.4.5-blue)
+![Version](https://img.shields.io/badge/version-0.4.6-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **Contador local de cofres de Fortnite para Windows 10/11.** Analiza los archivos de repetición (`.replay`) al acabar cada partida y ofrece estadísticas personales, cofres del equipo y un historial con gráficas en el navegador.
 
 No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de Epic Games y no envía tus estadísticas a un servidor.
 
-> **Estado: v0.4.5.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
+> **Estado: v0.4.6.** El proyecto pasa las pruebas automáticas y se compila en GitHub Actions, pero la precisión del conteo y la atribución de compañeros aún dependen del formato y del contenido real de las repeticiones. Las actualizaciones de Fortnite pueden requerir ajustes.
 
 ## Qué hace
 
@@ -18,6 +18,7 @@ No lee la memoria del juego, no modifica Fortnite, no solicita credenciales de E
 - **Horas del Tesoro:** se aplica automáticamente el bono a la hora de cada cofre usando los segundos de los eventos almacenados en SQLite (incluye partidas que cruzan un cambio horario). El 7/11, 19:00–21:00 UTC se aplica ×1,5 y el 8/11, 02:00–04:00 UTC se aplica ×2 (sesiones históricas confirmadas). Las franjas siguientes de los sábados 14, 21 y 28 de noviembre y 5 de diciembre, a 19:00–21:00 UTC y 02:00–04:00 UTC del domingo, se incluyen **solo como previsiones ×1,5**, no como horarios/multiplicadores definitivamente confirmados. El código puede actualizarse fácilmente en `src/FortniteChestTracker/TicketOdds.cs` si Epic anuncia cambios. **No hay sincronización por Internet**.
 - **Estimación de party:** presenta un cálculo secundario para los cofres del equipo; los datos de compañeros pueden ser incompletos y sus aperturas se aproximan a la hora de inicio de la partida. Las partidas antiguas sin segundos de evento conservan los totales, pero aproximan su hora de apertura.
 - **Estadísticas por periodos:** Hoy, Esta semana, Este mes, gráfica diaria/mensual y filtros del historial muestran tanto tus cofres como los de la party (incluidos los tuyos). Puedes pulsar «Tú» o «Party» en la leyenda para ocultar o mostrar sus barras; la elección se conserva al actualizar el panel.
+- **Cabecera compacta:** los dos totales muestran solo el título y el número, con menos altura y sin textos secundarios.
 - **Aspecto personalizable:** diez estilos (Arena, Tactical HUD, Studio Light, Prism, Carbon, Neon Arcade, Glacier, Solar Flare, Ember y Blueprint), selector directo en el panel y preferencia guardada en el navegador. Arena, Tactical HUD, Studio Light y Prism ahora tienen tratamientos visuales propios. Los adornos de los diez temas comparten escala y alineación; Carbon mantiene su adorno centrado en Party. Arena utiliza dos franjas diagonales discretas, Tactical HUD una retícula de esquinas y Studio Light un doble aro fino; se conserva la posición común de todos los adornos. Studio Light tiene contraste corregido y Arena no tiene el recorte diagonal del panel principal. El título utiliza el mismo icono que el ejecutable.
 - **Tus cofres:** aperturas, destruidos, récord, media, estadísticas diarias y mensuales.
 - **Cofres de party:** suma tus cofres una sola vez y añade los cofres *registrados y atribuibles* al resto de tu equipo.
