@@ -251,7 +251,7 @@
       if (state.filter === "bucket" && state.range &&
           state.range.start === group.start.toISOString()) bar.classList.add("selected");
       bar.title = rangeLabel(group.start, group.end) + ": tú " + group.chests +
-      " cofres, party " + group.party + " observados, en " + group.games + " partidas";
+      " cofres, party " + group.party +  cofres, en " + group.games + " partidas";
       bar.setAttribute("aria-label", bar.title + ". Filtrar historial");
       const series = visibleChartSeries(group, state.showOwner, state.showParty);
       const count = document.createElement("span");
@@ -376,7 +376,7 @@
       ? "0 partidas"
       : "Mostrando " + (first + 1) + "–" + (first + visible.length) + " de " + fmtNumber.format(filtered.length) + " partidas";
     $("history-total").textContent = "Tú: " + fmtNumber.format(filtered.reduce((total, m) => total + m.chests, 0)) + " cofres";
-    $("history-party").textContent = "Party: " + fmtNumber.format(filtered.reduce((total, m) => total + (m.party ?? m.chests), 0)) + " cofres observados";
+    $("history-party").textContent = "Party: " + fmtNumber.format(filtered.reduce((total, m) => total + (m.party ?? m.chests), 0)) + " cofres";
     $("page-prev").disabled = state.page === 1;
     $("page-next").disabled = state.page === result.pages;
   }
