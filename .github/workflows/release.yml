@@ -1,6 +1,6 @@
 name: Publish Windows EXE release
 
-# v0.4.5: remove unneeded 'observado' wording from dashboard.
+# v0.4.6: compact hero panel with titles and numbers only.
 # Future releases are explicitly started via "Run workflow" after bumping
 # <Version> in the project file; normal code pushes never publish a release.
 on:
@@ -95,8 +95,9 @@ jobs:
           - Panel simplificado: los cofres de Party se presentan sin calificativos,
             tanto en tarjetas como en gráficas e historial.
           - Se conservan los cálculos actuales de medias, munición y cofres.
-          - El resumen de cofres de party muestra solo «Total» y el texto
-            «contando los tuyos.» mantiene su punto final.
+          - NUEVO: cabecera principal más compacta, sólo títulos y números de
+            Tus cofres y Cofres de party, sin etiquetas ni subtítulos redundantes.
+          - La tarjeta de probabilidad mantiene «contando los tuyos.» con su punto final.
           - Cada cofre es independiente: nunca se garantiza conseguir el ticket.
           - Se mantienen el icono de bandeja sin consola, el estado del monitor, los
             diez estilos y todos los filtros/historiales. Los datos son locales.
