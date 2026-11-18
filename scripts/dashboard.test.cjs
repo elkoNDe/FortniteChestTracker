@@ -376,3 +376,25 @@ test('Los textos del dashboard muestran cofres sin calificativos', () => {
   assert.match(script, /" cofres, en " \+ group\.games/);
   assert.match(script, /" cofres";/);
 });
+
+test('v0.4.7: adornos centrados dentro de la cabecera compacta sin cambiar los tres temas correctos', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const dashboard = fs.readFileSync(path.join(__dirname,
+    '../src/FortniteChestTracker/Dashboard.cs'), 'utf8');
+  const start = dashboard.indexOf('/* The compact hero is shorter than the former 140px motif canvas.');
+  const end = dashboard.indexOf('/* Light themes need explicitly dark inherited text', start);
+  assert.ok(start >= 0 && end > start, 'Faltan las reglas del marco compacto');
+  const compact = dashboard.slice(start, end);
+  const adjusted = ['tactical', 'prism', 'arcade', 'glacier', 'solar', 'blueprint'];
+  for (const theme of adjusted)
+    assert.ok(compact.includes('html[data-theme="' + theme + '"] .hero::after'),
+      'No se ha corregido ' + theme);
+  for (const theme of ['arena', 'ember', 'studio'])
+    assert.ok(!compact.includes('html[data-theme="' + theme + '"]'),
+      'No se debe modificar la geometria ya correcta de ' + theme);
+  assert.match(compact, /width: 104px;\s*height: min\(104px, calc\(100% - 20px\)\);/);
+  assert.match(compact, /top: 50%;\s*transform: translateY\(-50%\);\s*font-size: 88px;/);
+  assert.match(compact, /html\[data-theme="carbon"\] \.hero-squad::after \{\s*width: 104px; height: 86px; font-size: 54px;/);
+  assert.match(dashboard, /html\[data-theme="carbon"\] \.hero-squad::after \{[\s\S]*?left: 50%; top: 50%;[\s\S]*?transform: translate\(-50%, -50%\)/);
+});
