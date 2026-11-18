@@ -690,6 +690,25 @@ public static class Dashboard
                 background: linear-gradient(145deg, #3f2830, var(--surface) 80%); }
             html[data-theme="solar"] .total { text-shadow: 0 7px 24px #17101855; }
             html[data-theme="solar"] .chart-fill { border-radius: 8px 8px 0 0; }
+            /* The compact hero is shorter than the former 140px motif canvas.
+               Constrain only the seven affected themes so decorations remain
+               vertically centered and are never cropped by the hero border.
+               Arena, Ember and Studio Light intentionally keep their originals. */
+            html[data-theme="tactical"] .hero::after,
+            html[data-theme="prism"] .hero::after,
+            html[data-theme="arcade"] .hero::after,
+            html[data-theme="glacier"] .hero::after,
+            html[data-theme="solar"] .hero::after,
+            html[data-theme="blueprint"] .hero::after {
+                width: 104px;
+                height: min(104px, calc(100% - 20px));
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 88px;
+            }
+            html[data-theme="carbon"] .hero-squad::after {
+                width: 104px; height: 86px; font-size: 54px;
+            }
             /* Light themes need explicitly dark inherited text despite dark default CSS. */
             html[data-theme="studio"], html[data-theme="glacier"] {
                 color: var(--text);
